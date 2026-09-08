@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Кэшируется вся ~/.platformio: тулчейн xtensa и ядро ESP8266 весят
+      # сотни мегабайт, без кэша каждый прогон качал бы их заново.
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.platformio/.cache
+            ~/.platformio/packages
+            ~/.platformio/platforms
+          key: pio-${{ runner.os }}-${{ hashFiles('platformio.ini') }}
+          restore-keys: pio-${{ runner.os }}-
+
+      - name: Install PlatformIO
+        run: pip install --upgrade platformio
+
+      # Тесты чистой логики: плата не нужна, на Linux берётся системный gcc.
+      - name: Run unit tests
+        run: pio test -e native
+
+      - name: Build firmware
+        run: pio run -e d1_mini

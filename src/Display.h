@@ -19,4 +19,4 @@ void displayPortal(const char *apSsid, const char *apPass, const char *ip);
 void displayMessage(const char *line1, const char *line2 = nullptr);
 
 // Рабочий экран: крупное давление плюс строка состояния связи.
-void displayReading(const Reading &r, bool wifiOk, bool mqttEnabled, bool mqttOk);
+void displayReading(const Reading &r, bool wifiOk, bool mqttEnabled, bool mqttOk, bool tls);

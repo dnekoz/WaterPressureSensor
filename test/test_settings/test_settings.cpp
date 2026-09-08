@@ -148,7 +148,7 @@ static void test_adc_scale_too_low_reset(void) {
 
 static void test_adc_scale_too_high_reset(void) {
   Settings s      = defaults();
-  s.adcFullScaleV = 6.0f;
+  s.adcFullScaleV = 10.1f;
   TEST_ASSERT_TRUE(settingsSanitize(s, DEV));
   TEST_ASSERT_FLOAT_WITHIN(0.001f, 3.2f, s.adcFullScaleV);
 }

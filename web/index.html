@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>Давление воды</title>
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('wps-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){document.documentElement.dataset.theme=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}</script>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/app.css?v=@ASSET_VERSION@">
+  <script src="/app.js?v=@ASSET_VERSION@" defer></script>
+</head>
+<body>
+  <svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 3C9 7 5 11 5 15a7 7 0 0 0 14 0c0-4-4-8-7-12Z"/><path d="M8 15a4 4 0 0 0 4 4"/></symbol>
+    <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4 19a10 10 0 1 1 16 0M12 12l5-5M5 12H3m18 0h-2M12 3v2"/><circle cx="12" cy="12" r="2"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2 8a16 16 0 0 1 20 0M5 12a11 11 0 0 1 14 0M8 16a6 6 0 0 1 8 0"/><circle cx="12" cy="20" r=".6"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M5 3v8m0 4v6M12 3v2m0 4v12M19 3v12m0 4v2M2 11h6m1-6h6m1 10h6"/></symbol>
+    <symbol id="i-chip" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="3"/><path d="M9 1v4m6-4v4M9 19v4m6-4v4M1 9h4m-4 6h4m14-6h4m-4 6h4M9 9h6v6H9Z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 15A9 9 0 0 1 9 4a9 9 0 1 0 11 11Z"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="m10 14 4-4m-6 6-2 2a4 4 0 0 1-6-6l4-4a4 4 0 0 1 6 0m4 8a4 4 0 0 0 6 0l4-4a4 4 0 0 0-6-6l-2 2" transform="translate(2 -2) scale(.85)"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></symbol>
+  </svg>
+  <a class="skip-link" href="#main">К содержимому</a>
+  <header class="header">
+    <div class="header-inner">
+      <a class="brand" href="#overview"><span class="brand-mark"><svg><use href="#i-drop"/></svg></span><span>Давление воды<small id="device-name">Wemos D1 mini</small></span></a>
+      <nav class="navigation" aria-label="Основные разделы">
+        <a href="#overview" aria-current="page"><svg><use href="#i-gauge"/></svg><span>Обзор</span></a>
+        <a href="#connection"><svg><use href="#i-wifi"/></svg><span>Подключение</span></a>
+        <a href="#calibration"><svg><use href="#i-sliders"/></svg><span>Калибровка</span></a>
+        <a href="#device"><svg><use href="#i-chip"/></svg><span>Устройство</span></a>
+      </nav>
+      <div class="header-actions"><button class="icon-button" id="theme-toggle" aria-label="Включить тёмную тему" title="Включить тёмную тему"><svg><use href="#i-moon"/></svg></button><button class="icon-button" id="auth-button" aria-label="Войти в настройки" title="Войти в настройки"><svg><use href="#i-lock"/></svg></button></div>
+    </div>
+  </header>
+  <main id="main" tabindex="-1">
+    <div class="notice demo" id="demo-notice" hidden>Демонстрация интерфейса · показания и устройство смоделированы</div>
+    <div class="notice warning" id="connection-notice" role="status" hidden></div>
+    <div class="notice warning" id="storage-notice" role="status" hidden></div>
+    <section id="overview" class="page" aria-labelledby="overview-title">
+      <div class="page-heading"><div><p class="eyebrow">МОНИТОРИНГ В РЕАЛЬНОМ ВРЕМЕНИ</p><h1 id="overview-title">Обзор системы</h1></div><span class="badge" id="live-badge">Подключаемся</span></div>
+      <div class="dashboard-grid">
+        <article class="card gauge-card">
+          <div class="card-heading"><h2>Давление</h2><span class="subtle" id="reading-time">Ожидание данных</span></div>
+          <div class="gauge" role="img" aria-label="Показания давления пока недоступны" id="gauge">
+            <svg viewBox="0 0 600 365" aria-hidden="true"><g id="gauge-ticks"></g><path class="gauge-track" d="M 50 300 A 250 250 0 0 1 550 300"/><path id="gauge-arc" class="gauge-arc" d="M 50 300 A 250 250 0 0 1 550 300" pathLength="100" stroke-dasharray="0 100"/><circle id="gauge-dot" cx="50" cy="300" r="9" hidden/><text class="scale-label" x="50" y="340" text-anchor="middle">0</text><text class="scale-label" id="gauge-max" x="550" y="340" text-anchor="middle">—</text></svg>
+            <div class="gauge-value"><span id="pressure-value">—</span><span class="gauge-unit">бар</span><span class="mpa" id="pressure-mpa">— МПа</span></div>
+          </div>
+          <div class="measurement-state" id="measurement-state" role="status"><span class="status-dot"></span><span>Ожидание первого измерения</span></div>
+          <p class="gauge-caption" id="gauge-range">Измеримый диапазон определяется калибровкой</p>
+        </article>
+        <aside class="card status-card" aria-labelledby="status-title">
+          <div class="card-heading"><h2 id="status-title">Состояние системы</h2></div>
+          <div class="status-item"><span class="status-icon"><svg><use href="#i-wifi"/></svg></span><div><h3>Wi-Fi</h3><p id="wifi-state">Ожидание</p><small id="wifi-detail">—</small></div><span class="status-dot" id="wifi-dot"></span></div>
+          <div class="status-item"><span class="status-icon"><svg><use href="#i-link"/></svg></span><div><h3>MQTT</h3><p id="mqtt-state">Ожидание</p><small id="mqtt-detail">—</small></div><span class="status-dot" id="mqtt-dot"></span></div>
+          <div class="status-item"><span class="status-icon"><svg><use href="#i-gauge"/></svg></span><div><h3>Датчик</h3><p id="sensor-state">Ожидание</p><small id="sensor-detail">—</small></div><span class="status-dot" id="sensor-dot"></span></div>
+          <a class="text-link status-link" href="#connection">Настроить подключение <span aria-hidden="true">↗</span></a>
+        </aside>
+      </div>
+      <div class="card diagnostics"><div><span>Сигнал Wi-Fi</span><strong id="diag-rssi">—</strong></div><div><span>Напряжение датчика</span><strong id="diag-volts">—</strong></div><div><span>АЦП · среднее / сейчас</span><strong id="diag-raw">—</strong></div><div><span>Свободная память</span><strong id="diag-heap">—</strong></div></div>
+      <p class="footnote">Показания обновляются каждые 2 секунды. Индикатор отражает измеримость сигнала, а не допустимое давление в трубопроводе.</p>
+    </section>
+    <section id="connection" class="page" aria-labelledby="connection-title" hidden>
+      <div class="page-heading"><div><p class="eyebrow">СЕТЬ И ИНТЕГРАЦИИ</p><h1 id="connection-title">Подключение</h1></div></div>
+      <div class="auth-notice notice"><span>Для изменения настроек войдите с паролем устройства.</span><button class="button small" data-login>Войти</button></div>
+      <div class="settings-grid">
+        <article class="card form-card"><h2>Сеть Wi-Fi</h2><p class="subtle">Подключите датчик к сети 2,4 ГГц.</p>
+          <form id="wifi-form"><fieldset data-protected disabled>
+            <label for="wifi-ssid">Имя сети (SSID)</label><div class="input-action"><input id="wifi-ssid" name="ssid" required maxlength="32" autocomplete="off"><button type="button" class="button secondary" id="scan-button">Найти сети</button></div>
+            <div class="network-list" id="network-list" hidden></div>
+            <label for="wifi-password">Пароль сети</label><input id="wifi-password" name="password" type="password" maxlength="63" autocomplete="new-password" placeholder="Пустой для открытой сети">
+            <label class="check-label"><input type="checkbox" id="wifi-keep" checked> Сохранить пароль текущей сети</label>
+            <div class="form-actions"><button class="button" type="submit">Подключиться</button></div>
+          </fieldset><p class="form-message" role="status"></p></form>
+          <p class="help">После смены сети адрес устройства может измениться. Резервная точка доступа позволяет продолжить настройку.</p>
+        </article>
+        <article class="card form-card"><h2>MQTT и Home Assistant</h2><p class="subtle">Оставьте адрес брокера пустым для автономной работы.</p>
+          <form id="mqtt-form"><fieldset data-protected disabled>
+            <div class="form-row host-row"><div><label for="mqttHost">Адрес брокера</label><input id="mqttHost" name="mqttHost" maxlength="63" placeholder="mqtt.example.local" autocapitalize="none" spellcheck="false"></div><div><label for="mqttPort">Порт</label><input id="mqttPort" name="mqttPort" type="number" min="1" max="65535" required inputmode="numeric"></div></div>
+            <div class="form-row"><div><label for="mqttUser">Пользователь</label><input id="mqttUser" name="mqttUser" maxlength="31" autocomplete="username"></div><div><label for="mqttPass">Пароль</label><input id="mqttPass" name="mqttPass" type="password" maxlength="63" autocomplete="new-password" placeholder="Не изменять"></div></div>
+            <label class="check-label"><input id="mqtt-clear" type="checkbox"> Удалить сохранённый пароль MQTT</label>
+            <label for="mqttBase">Базовый топик</label><input id="mqttBase" name="mqttBase" maxlength="63" required spellcheck="false">
+            <div class="form-row"><div><label for="mqttIntervalS">Интервал, с</label><input id="mqttIntervalS" name="mqttIntervalS" type="number" min="1" max="3600" required inputmode="numeric"></div><div><label for="haPrefix">Префикс discovery</label><input id="haPrefix" name="haPrefix" maxlength="31" spellcheck="false" placeholder="Выключено"></div></div>
+            <label for="mqttTlsMode">Защита соединения</label><select id="mqttTlsMode" name="mqttTlsMode"><option value="0">Без TLS</option><option value="1">TLS · без проверки сертификата</option><option value="2">TLS · отпечаток SHA-1</option><option value="3">TLS · CA-сертификат</option></select>
+            <p class="help" id="tls-help"></p>
+            <div id="fingerprint-fields" hidden><label for="mqttFingerprint">Отпечаток SHA-1</label><input id="mqttFingerprint" name="mqttFingerprint" maxlength="63" placeholder="AA:BB:CC:…" spellcheck="false" autocapitalize="none"></div>
+            <div id="ntp-fields" hidden><label for="ntpServer">Сервер времени NTP</label><input id="ntpServer" name="ntpServer" maxlength="63" placeholder="pool.ntp.org" spellcheck="false"></div>
+            <div class="form-actions"><button class="button" type="submit">Сохранить MQTT</button></div>
+          </fieldset><p class="form-message" role="status"></p></form>
+        </article>
+        <article class="card form-card"><h2>CA-сертификат</h2><p class="subtle" id="ca-state">Состояние пока неизвестно</p><form id="ca-form"><fieldset data-protected disabled><label for="ca-file">Корневой сертификат в формате PEM</label><input id="ca-file" type="file" accept=".pem,.crt,.cer" required><p class="help">До 4 КБ. Новый сертификат заменит предыдущий только после успешной проверки.</p><div class="form-actions"><button class="button" type="submit">Загрузить сертификат</button><button class="button secondary" type="button" id="ca-delete">Удалить</button></div></fieldset><p class="form-message" role="status"></p></form></article>
+        <article class="card form-card note-card"><span class="status-icon"><svg><use href="#i-link"/></svg></span><h2>Всегда рядом</h2><p>Этот интерфейс работает прямо на датчике. Для просмотра давления интернет не нужен.</p><p>Если домашняя сеть недоступна, подключитесь к резервной сети <strong id="ap-name">WaterSensor-…</strong> и откройте <a href="http://192.168.4.1/">192.168.4.1</a>.</p><p class="help">Пароль интерфейса и резервной сети выводится в USB Serial при запуске, а при настройке — на OLED.</p></article>
+      </div>
+    </section>
+    <section id="calibration" class="page" aria-labelledby="calibration-title" hidden>
+      <div class="page-heading"><div><p class="eyebrow">ТОЧНОСТЬ ИЗМЕРЕНИЙ</p><h1 id="calibration-title">Калибровка</h1></div></div>
+      <div class="auth-notice notice"><span>Для изменения настроек войдите с паролем устройства.</span><button class="button small" data-login>Войти</button></div>
+      <div class="settings-grid"><article class="card form-card"><h2>Параметры датчика</h2><p class="subtle">Укажите характеристики датчика и входной цепи.</p>
+        <form id="calibration-form"><fieldset data-protected disabled>
+          <label for="adcFullScaleV">Входная шкала АЦП, В</label><input id="adcFullScaleV" name="adcFullScaleV" type="number" min="1" max="10" step="any" required inputmode="decimal"><p class="help">Напряжение на выходе датчика, соответствующее отсчёту 1023, с учётом всех делителей.</p>
+          <div class="form-row"><div><label for="vZero">При нуле, В</label><input id="vZero" name="vZero" type="number" min="0" max="9.9" step="any" required inputmode="decimal"></div><div><label for="vFull">При полной шкале, В</label><input id="vFull" name="vFull" type="number" min="0.1" max="10" step="any" required inputmode="decimal"></div></div>
+          <label for="pFullMPa">Полная шкала датчика, МПа</label><input id="pFullMPa" name="pFullMPa" type="number" min="0.000001" max="100" step="any" required inputmode="decimal">
+          <div class="form-actions"><button class="button" type="submit">Сохранить калибровку</button></div>
+        </fieldset><p class="form-message" role="status"></p></form>
+      </article><article class="card form-card calibration-preview"><p class="eyebrow">РАСЧЁТ ПО ВВЕДЁННЫМ ПАРАМЕТРАМ</p><h2>Измеримый диапазон</h2><div class="preview-number" id="calibration-range">—</div><p class="subtle">бар</p><div class="rule"></div><p>Сверьте показания с контрольным манометром в нескольких точках диапазона. Сохранение параметров перезапускает фильтр измерений.</p><div class="notice warning">Настройка шкалы не защищает вход A0 от перенапряжения. Датчику 0,5–4,5 В нужен согласующий делитель. Схема и расчёт приведены в README.</div></article></div>
+    </section>
+    <section id="device" class="page" aria-labelledby="device-title" hidden>
+      <div class="page-heading"><div><p class="eyebrow">ПАРАМЕТРЫ И ОБСЛУЖИВАНИЕ</p><h1 id="device-title">Устройство</h1></div></div>
+      <div class="auth-notice notice"><span>Для изменения настроек войдите с паролем устройства.</span><button class="button small" data-login>Войти</button></div>
+      <div class="settings-grid"><article class="card form-card"><h2>Информация</h2><dl class="info-list"><div><dt>Модель</dt><dd>Wemos D1 mini · ESP8266</dd></div><div><dt>Идентификатор</dt><dd id="info-id">—</dd></div><div><dt>Версия прошивки</dt><dd id="info-version">—</dd></div><div><dt>IP-адрес</dt><dd id="info-ip">—</dd></div><div><dt>Время работы</dt><dd id="info-uptime">—</dd></div><div><dt>Свободный блок памяти</dt><dd id="info-block">—</dd></div></dl><form id="name-form"><fieldset data-protected disabled><label for="deviceName">Имя устройства</label><input id="deviceName" name="deviceName" maxlength="31" required><div class="form-actions"><button class="button" type="submit">Сохранить имя</button></div></fieldset><p class="form-message" role="status"></p></form></article>
+        <article class="card form-card"><h2>Обновление прошивки</h2><p class="subtle">Загрузите firmware.bin, собранный для D1 mini.</p><form id="firmware-form"><fieldset data-protected disabled><label for="firmware-file">Файл прошивки</label><input id="firmware-file" type="file" accept=".bin" required><p class="help">Настройки и CA-сертификат сохраняются. Во время записи не отключайте питание.</p><progress id="upload-progress" max="100" value="0" hidden aria-label="Загрузка прошивки"></progress><div class="form-actions"><button class="button" type="submit">Обновить прошивку</button></div></fieldset><p class="form-message" role="status"></p></form></article>
+        <article class="card form-card"><h2>Пароль интерфейса</h2><p class="subtle">Он также используется для резервной сети Wi-Fi.</p><form id="password-form"><fieldset data-protected disabled><label for="portalPass">Новый пароль</label><input id="portalPass" name="portalPass" type="password" minlength="12" maxlength="63" required autocomplete="new-password"><label for="portalPassConfirm">Повторите пароль</label><input id="portalPassConfirm" type="password" minlength="12" maxlength="63" required autocomplete="new-password"><p class="help">12–63 печатных символа ASCII без пробелов. Для резервной сети пароль обновится после перезагрузки.</p><div class="form-actions"><button class="button" type="submit">Изменить пароль</button></div></fieldset><p class="form-message" role="status"></p></form></article>
+        <article class="card form-card"><h2>Перезагрузка</h2><p class="subtle">Измерения и соединение прервутся на время запуска.</p><fieldset data-protected disabled><button class="button secondary" id="restart-button">Перезагрузить устройство</button></fieldset><p class="form-message" id="restart-message" role="status"></p><div class="rule"></div><p class="help">Доступ к настройкам защищён паролем. Сам веб-интерфейс использует HTTP; подключайтесь к устройству в доверенной локальной сети.</p></article>
+      </div>
+    </section>
+    <footer><span>Wemos D1 mini <span class="footer-dot">·</span> <span id="footer-version">Датчик давления</span></span><span id="footer-address">Локальный интерфейс</span></footer>
+  </main>
+  <dialog id="login-dialog" aria-labelledby="login-title"><form id="login-form"><div class="dialog-heading"><h2 id="login-title">Вход в настройки</h2><button class="icon-button" type="button" data-close aria-label="Закрыть">×</button></div><p class="subtle">Введите пароль устройства из USB Serial или с OLED в режиме настройки.</p><label for="login-password">Пароль</label><input type="password" id="login-password" required autocomplete="current-password"><p class="form-message" role="alert"></p><button class="button" type="submit">Войти</button></form></dialog>
+  <dialog id="confirm-dialog" aria-labelledby="confirm-title"><div class="dialog-heading"><h2 id="confirm-title">Подтверждение</h2><button class="icon-button" type="button" data-close aria-label="Закрыть">×</button></div><p id="confirm-text"></p><div class="form-actions"><button class="button secondary" id="confirm-cancel">Отмена</button><button class="button" id="confirm-accept">Продолжить</button></div></dialog>
+</body>
+</html>
+

@@ -162,7 +162,8 @@ static void test_adc_scale_above_sensor_range(void) {
   s.adcFullScaleV = 5.0f;
 
   TEST_ASSERT_FLOAT_WITHIN(0.001f, 0.5625f, pressureConvert(1023, s).mpa);
-  TEST_ASSERT_FLOAT_WITHIN(0.01f, 5.625f, pressureMaxBar(s));
+  TEST_ASSERT_FLOAT_WITHIN(0.01f, 5.0f, pressureMaxBar(s));
+  TEST_ASSERT_TRUE(pressureConvert(1023, s).over);
 }
 
 static void test_shifted_sensor_zero(void) {

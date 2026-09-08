@@ -15,6 +15,7 @@
 static const size_t PUBLISH_BUFFER = 1024;
 
 static const char *DEV = "wps_abc123";
+static const char *CFG_URL = "http://192.168.1.50/";
 
 static Settings defaults() {
   Settings s;
@@ -93,7 +94,7 @@ static void test_state_json_normal(void) {
 
   TEST_ASSERT_EQUAL_STRING(
       "{\"bar\":2.55,\"mpa\":0.255,\"volt\":2.540,\"raw\":812,\"rssi\":-58,"
-      "\"over\":false,\"fault\":false,\"heap\":24568}",
+      "\"over\":false,\"fault\":false,\"heap\":24568,\"raw_instant\":0,\"age_ms\":0,\"stale\":false}",
       buf);
   TEST_ASSERT_EQUAL_size_t(strlen(buf), len);
 }
@@ -164,7 +165,7 @@ static void test_state_json_fits_in_publish_buffer(void) {
 static void test_discovery_pressure_entity(void) {
   char buf[1024];
   mqttDiscoveryJson(buf, sizeof(buf), defaults(), DEV, "pressure", "Pressure", "pressure", "bar",
-                    "{{ value_json.bar }}", false);
+                    "{{ value_json.bar }}", false, CFG_URL);
 
   TEST_ASSERT_NOT_NULL(strstr(buf, "\"name\":\"Pressure\""));
   TEST_ASSERT_NOT_NULL(strstr(buf, "\"uniq_id\":\"wps_abc123_pressure\""));
@@ -178,7 +179,7 @@ static void test_discovery_pressure_entity(void) {
 static void test_discovery_value_template_is_escaped_correctly(void) {
   char buf[1024];
   mqttDiscoveryJson(buf, sizeof(buf), defaults(), DEV, "pressure", "Pressure", "pressure", "bar",
-                    "{{ value_json.bar }}", false);
+                    "{{ value_json.bar }}", false, CFG_URL);
   TEST_ASSERT_NOT_NULL(strstr(buf, "\"val_tpl\":\"{{ value_json.bar }}\""));
 }
 
@@ -187,7 +188,7 @@ static void test_discovery_device_block_groups_entities(void) {
   // в интерфейсе Home Assistant.
   char buf[1024];
   mqttDiscoveryJson(buf, sizeof(buf), defaults(), DEV, "pressure", "Pressure", "pressure", "bar",
-                    "{{ value_json.bar }}", false);
+                    "{{ value_json.bar }}", false, CFG_URL);
 
   TEST_ASSERT_NOT_NULL(strstr(buf, "\"ids\":[\"wps_abc123\"]"));
   TEST_ASSERT_NOT_NULL(strstr(buf, "\"name\":\"Water Pressure\""));
@@ -201,7 +202,7 @@ static void test_discovery_uses_custom_device_name(void) {
 
   char buf[1024];
   mqttDiscoveryJson(buf, sizeof(buf), s, DEV, "pressure", "Pressure", "pressure", "bar",
-                    "{{ value_json.bar }}", false);
+                    "{{ value_json.bar }}", false, CFG_URL);
   TEST_ASSERT_NOT_NULL(strstr(buf, "\"name\":\"Boiler loop\""));
 }
 
@@ -209,11 +210,11 @@ static void test_discovery_diagnostic_flag(void) {
   char buf[1024];
 
   mqttDiscoveryJson(buf, sizeof(buf), defaults(), DEV, "rssi", "WiFi signal", "signal_strength",
-                    "dBm", "{{ value_json.rssi }}", true);
+                    "dBm", "{{ value_json.rssi }}", true, CFG_URL);
   TEST_ASSERT_NOT_NULL(strstr(buf, "\"ent_cat\":\"diagnostic\""));
 
   mqttDiscoveryJson(buf, sizeof(buf), defaults(), DEV, "pressure", "Pressure", "pressure", "bar",
-                    "{{ value_json.bar }}", false);
+                    "{{ value_json.bar }}", false, CFG_URL);
   TEST_ASSERT_NULL(strstr(buf, "ent_cat"));
 }
 
@@ -221,7 +222,7 @@ static void test_discovery_omits_optional_keys(void) {
   // Сущность «сырой отсчёт АЦП» не имеет ни device_class, ни единицы измерения.
   char buf[1024];
   mqttDiscoveryJson(buf, sizeof(buf), defaults(), DEV, "raw", "ADC raw", nullptr, nullptr,
-                    "{{ value_json.raw }}", true);
+                    "{{ value_json.raw }}", true, CFG_URL);
 
   TEST_ASSERT_NULL(strstr(buf, "dev_cla"));
   TEST_ASSERT_NULL(strstr(buf, "unit_of_meas"));
@@ -232,13 +233,84 @@ static void test_discovery_unique_ids_differ_per_entity(void) {
   char a[1024];
   char b[1024];
   mqttDiscoveryJson(a, sizeof(a), defaults(), DEV, "pressure", "Pressure", "pressure", "bar",
-                    "{{ value_json.bar }}", false);
+                    "{{ value_json.bar }}", false, CFG_URL);
   mqttDiscoveryJson(b, sizeof(b), defaults(), DEV, "voltage", "Sensor voltage", "voltage", "V",
-                    "{{ value_json.volt }}", false);
+                    "{{ value_json.volt }}", false, CFG_URL);
 
   TEST_ASSERT_NOT_NULL(strstr(a, "wps_abc123_pressure"));
   TEST_ASSERT_NOT_NULL(strstr(b, "wps_abc123_voltage"));
   TEST_ASSERT_NOT_EQUAL(0, strcmp(a, b));
+}
+
+static void test_discovery_sets_expire_after(void) {
+  // Без expire_after Home Assistant показывает последнее значение как актуальное
+  // сколько угодно долго: пропавший датчик давления выглядит исправным.
+  Settings s      = defaults();
+  s.mqttIntervalS = 10;
+
+  char buf[1024];
+  mqttDiscoveryJson(buf, sizeof(buf), s, DEV, "pressure", "Pressure", "pressure", "bar",
+                    "{{ value_json.bar }}", false, CFG_URL);
+  TEST_ASSERT_NOT_NULL(strstr(buf, "\"exp_aft\":40"));
+}
+
+static void test_discovery_expire_after_follows_interval(void) {
+  // Одна потерянная посылка не должна гасить сущность, отсюда трёхкратный запас.
+  Settings s      = defaults();
+  s.mqttIntervalS = 3600;
+
+  char buf[1024];
+  mqttDiscoveryJson(buf, sizeof(buf), s, DEV, "pressure", "Pressure", "pressure", "bar",
+                    "{{ value_json.bar }}", false, CFG_URL);
+  TEST_ASSERT_NOT_NULL(strstr(buf, "\"exp_aft\":10810"));
+}
+
+static void test_discovery_includes_configuration_url(void) {
+  char buf[1024];
+  mqttDiscoveryJson(buf, sizeof(buf), defaults(), DEV, "pressure", "Pressure", "pressure", "bar",
+                    "{{ value_json.bar }}", false, CFG_URL);
+  TEST_ASSERT_NOT_NULL(strstr(buf, "\"cu\":\"http://192.168.1.50/\""));
+}
+
+static void test_discovery_omits_configuration_url_when_unknown(void) {
+  // Адрес неизвестен, пока не поднят WiFi: пустая ссылка в карточке устройства
+  // хуже, чем её отсутствие.
+  char buf[1024];
+  mqttDiscoveryJson(buf, sizeof(buf), defaults(), DEV, "pressure", "Pressure", "pressure", "bar",
+                    "{{ value_json.bar }}", false, nullptr);
+  TEST_ASSERT_NULL(strstr(buf, "\"cu\""));
+}
+
+// ------------------------------------------------- уборка старых топиков ---
+
+static void test_discovery_topic_for_arbitrary_prefix(void) {
+  // Так строится топик для гашения конфигурации под прежним префиксом.
+  char buf[160];
+  mqttDiscoveryTopicFor(buf, sizeof(buf), "old_prefix", DEV, "pressure");
+  TEST_ASSERT_EQUAL_STRING("old_prefix/sensor/wps_abc123/pressure/config", buf);
+}
+
+static void test_entity_key_list_matches_published_entities(void) {
+  // Список для уборки и список для публикации должны совпадать: разойдясь, они
+  // оставили бы часть сущностей непогашенной в Home Assistant.
+  TEST_ASSERT_EQUAL_size_t(4, MQTT_ENTITY_COUNT);
+  TEST_ASSERT_EQUAL_STRING("pressure", MQTT_ENTITY_KEYS[0]);
+  TEST_ASSERT_EQUAL_STRING("voltage", MQTT_ENTITY_KEYS[1]);
+  TEST_ASSERT_EQUAL_STRING("rssi", MQTT_ENTITY_KEYS[2]);
+  TEST_ASSERT_EQUAL_STRING("raw", MQTT_ENTITY_KEYS[3]);
+}
+
+static void test_stale_discovery_topics_differ_from_current(void) {
+  Settings s = defaults();
+  strcpy(s.haPrefix, "ha");
+
+  for (size_t i = 0; i < MQTT_ENTITY_COUNT; i++) {
+    char stale[160];
+    char current[160];
+    mqttDiscoveryTopicFor(stale, sizeof(stale), "homeassistant", DEV, MQTT_ENTITY_KEYS[i]);
+    mqttDiscoveryTopic(current, sizeof(current), s, DEV, MQTT_ENTITY_KEYS[i]);
+    TEST_ASSERT_NOT_EQUAL(0, strcmp(stale, current));
+  }
 }
 
 static void test_discovery_fits_in_publish_buffer(void) {
@@ -246,9 +318,12 @@ static void test_discovery_fits_in_publish_buffer(void) {
   // publish() возвращает false молча, и устройство не появится в Home Assistant.
   // Проверяем все четыре сущности, причём с длинными настройками.
   Settings s = defaults();
-  strcpy(s.mqttBase, "very/long/base/topic/for/this/water/pressure/sensor/device");
-  strcpy(s.deviceName, "Water Pressure Sensor In The Boiler Room");
-  strcpy(s.haPrefix, "homeassistant");
+  memset(s.mqttBase, 'b', sizeof(s.mqttBase) - 1);
+  s.mqttBase[sizeof(s.mqttBase) - 1] = '\0';
+  memset(s.deviceName, 'n', sizeof(s.deviceName) - 1);
+  s.deviceName[sizeof(s.deviceName) - 1] = '\0';
+  memset(s.haPrefix, 'h', sizeof(s.haPrefix) - 1);
+  s.haPrefix[sizeof(s.haPrefix) - 1] = '\0';
 
   struct Entity {
     const char *key;
@@ -270,9 +345,11 @@ static void test_discovery_fits_in_publish_buffer(void) {
     char   buf[2048];
     size_t len = mqttDiscoveryJson(buf, sizeof(buf), s, DEV, entities[i].key, entities[i].name,
                                    entities[i].devClass, entities[i].unit, entities[i].tmpl,
-                                   entities[i].diagnostic);
+                                   entities[i].diagnostic, CFG_URL);
     TEST_ASSERT_TRUE_MESSAGE(len > 0, entities[i].key);
-    TEST_ASSERT_TRUE_MESSAGE(len < PUBLISH_BUFFER, entities[i].key);
+    char topic[160];
+    mqttDiscoveryTopic(topic, sizeof(topic), s, DEV, entities[i].key);
+    TEST_ASSERT_TRUE_MESSAGE(len + strlen(topic) + 7 <= PUBLISH_BUFFER, entities[i].key);
   }
 }
 
@@ -301,6 +378,15 @@ int main(int, char **) {
   RUN_TEST(test_discovery_diagnostic_flag);
   RUN_TEST(test_discovery_omits_optional_keys);
   RUN_TEST(test_discovery_unique_ids_differ_per_entity);
+  RUN_TEST(test_discovery_sets_expire_after);
+  RUN_TEST(test_discovery_expire_after_follows_interval);
+  RUN_TEST(test_discovery_includes_configuration_url);
+  RUN_TEST(test_discovery_omits_configuration_url_when_unknown);
+
+  RUN_TEST(test_discovery_topic_for_arbitrary_prefix);
+  RUN_TEST(test_entity_key_list_matches_published_entities);
+  RUN_TEST(test_stale_discovery_topics_differ_from_current);
+
   RUN_TEST(test_discovery_fits_in_publish_buffer);
 
   return UNITY_END();

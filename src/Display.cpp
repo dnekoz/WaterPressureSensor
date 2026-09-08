@@ -21,7 +21,8 @@ bool displayBegin() {
   Wire.begin();
   Wire.setClock(400000);
 
-  if (!oled.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+  Wire.beginTransmission(SCREEN_ADDRESS);
+  if (Wire.endTransmission() != 0 || !oled.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
     // Прежняя версия здесь уходила в вечный for(;;). Дисплей — не критичный
     // узел: без него устройство всё равно меряет и публикует.
     Serial.println(F("[oled] дисплей не найден, работаю без экрана"));
@@ -61,16 +62,18 @@ void displayPortal(const char *apSsid, const char *apPass, const char *ip) {
   if (!s_ready) return;
 
   oled.clearDisplay();
+  oled.setFont(nullptr);
   oled.setTextSize(1);
-  oled.setCursor(0, 14);
+  oled.setCursor(0, 0);
   oled.print(F("SETUP MODE"));
-  oled.setCursor(0, 32);
+  oled.setCursor(0, 12);
   oled.print(apSsid);
-  oled.setCursor(0, 48);
+  oled.setCursor(0, 24);
   oled.print(apPass);
-  oled.setCursor(0, 63);
+  oled.setCursor(0, 56);
   oled.print(ip);
   oled.display();
+  oled.setFont(&FreeSans9pt7b);
 }
 
 void displayMessage(const char *line1, const char *line2) {
@@ -87,25 +90,35 @@ void displayMessage(const char *line1, const char *line2) {
   oled.display();
 }
 
-// Нижняя строка: состояние WiFi и MQTT.
-static void drawStatus(bool wifiOk, bool mqttEnabled, bool mqttOk) {
+// Нижняя строка: состояние WiFi и MQTT. Подключение по TLS обозначается
+// отдельно — без этого невозможно на месте убедиться, что шифрование включилось,
+// а не тихо откатилось.
+static void drawStatus(bool wifiOk, bool mqttEnabled, bool mqttOk, bool tls) {
   oled.setTextSize(1);
   oled.setCursor(0, BASELINE_STATUS);
   oled.print(wifiOk ? F("W:ok") : F("W:--"));
   oled.setCursor(56, BASELINE_STATUS);
   if (!mqttEnabled) {
     oled.print(F("M:off"));
+  } else if (mqttOk) {
+    oled.print(tls ? F("M:tls") : F("M:ok"));
   } else {
-    oled.print(mqttOk ? F("M:ok") : F("M:--"));
+    oled.print(F("M:--"));
   }
 }
 
-void displayReading(const Reading &r, bool wifiOk, bool mqttEnabled, bool mqttOk) {
+void displayReading(const Reading &r, bool wifiOk, bool mqttEnabled, bool mqttOk, bool tls) {
   if (!s_ready) return;
 
   oled.clearDisplay();
 
-  if (r.fault) {
+  if (r.stale) {
+    oled.setTextSize(1);
+    oled.setCursor(0, 20);
+    oled.print(F("STALE DATA"));
+    oled.setCursor(0, 42);
+    oled.print(F("waiting..."));
+  } else if (r.fault) {
     oled.setTextSize(1);
     oled.setCursor(0, 20);
     oled.print(F("NO SENSOR"));
@@ -137,6 +150,6 @@ void displayReading(const Reading &r, bool wifiOk, bool mqttEnabled, bool mqttOk
     oled.printf("%.3f MPa", r.mpa);
   }
 
-  drawStatus(wifiOk, mqttEnabled, mqttOk);
+  drawStatus(wifiOk, mqttEnabled, mqttOk, tls);
   oled.display();
 }

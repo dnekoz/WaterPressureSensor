@@ -10,9 +10,12 @@ extern Settings settings;
 // Уникальный идентификатор устройства, "wps_a1b2c3". Годен после settingsBegin().
 const char *deviceId();
 
-// Монтирует LittleFS (при неудаче форматирует) и читает /config.json.
+// Монтирует LittleFS и читает /config.json. Форматирует только стёртый раздел.
 // Отсутствующие и невалидные поля заполняются значениями по умолчанию.
 void settingsBegin();
 
 // Записывает текущие настройки в /config.json. true, если файл записан.
 bool settingsSave();
+bool settingsSave(const Settings &candidate);
+bool settingsCommit(const Settings &candidate);
+const char *settingsLastError();
