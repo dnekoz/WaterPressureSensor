@@ -36,6 +36,9 @@ static unsigned long s_lastAttemptMs = 0;
 static unsigned long s_backoffMs     = MQTT_RECONNECT_MIN_MS;
 static bool          s_everAttempted = false;
 static bool          s_justConnected = false;
+static bool          s_wasConnected = false;
+static bool          s_waitingWifi = false;
+static unsigned long s_attemptNumber = 0;
 
 // Предварительный DNS даёт понятную ошибку и адрес для пробы MFLN.
 // TLS всё равно получает имя хоста, необходимое для SNI и проверки сертификата.
@@ -79,24 +82,16 @@ static void setTlsError(const char *msg) {
   }
 }
 
-// Отказы, которые без правки настроек не пройдут никогда. Отдельно от временных
-// (брокер не запущен, сеть моргнула) — те повторять как раз нужно.
-static bool stateIsPermanent(int state) {
-  return state == MQTT_CONNECT_BAD_PROTOCOL || state == MQTT_CONNECT_BAD_CLIENT_ID ||
-         state == MQTT_CONNECT_BAD_CREDENTIALS || state == MQTT_CONNECT_UNAUTHORIZED;
-}
-
-static const char *describeState(int state) {
-  switch (state) {
-    case MQTT_CONNECT_BAD_PROTOCOL:    return "брокер не принял версию протокола MQTT";
-    case MQTT_CONNECT_BAD_CLIENT_ID:   return "брокер отклонил идентификатор клиента";
-    case MQTT_CONNECT_UNAVAILABLE:     return "брокер временно недоступен";
-    case MQTT_CONNECT_BAD_CREDENTIALS: return "неверный логин или пароль";
-    case MQTT_CONNECT_UNAUTHORIZED:    return "брокер запретил подключение";
-    case MQTT_CONNECTION_TIMEOUT:      return "брокер не ответил";
-    case MQTT_CONNECT_FAILED:          return "не удалось открыть соединение";
-    case MQTT_CONNECTION_LOST:         return "соединение потеряно";
-    default:                           return "подключиться не удалось";
+static void reportFailure(int state) {
+  const MqttDiagnostic diagnostic = mqttDiagnostic(state);
+  strncpy_P(s_mqttError, diagnostic.reason, sizeof(s_mqttError) - 1);
+  s_mqttError[sizeof(s_mqttError) - 1] = '\0';
+  Serial.printf("[MQTT][ERROR] %s:%u, код %d: %s\n", settings.mqttHost, settings.mqttPort, state, s_mqttError);
+  Serial.print(F("[MQTT][CHECK] "));
+  Serial.println(reinterpret_cast<const __FlashStringHelper *>(diagnostic.action));
+  if (diagnostic.permanent) {
+    s_configRejected = true;
+    Serial.println(F("[MQTT][PAUSED] Повторы остановлены. Исправьте настройки в веб-интерфейсе и нажмите Сохранить MQTT."));
   }
 }
 
@@ -178,6 +173,7 @@ static void rebuildClient() {
         // Без CA подключаться нельзя: пользователь просил именно проверку.
         // Тихо откатиться в insecure значило бы обмануть его ожидания.
         setTlsError(caLastError());
+        Serial.println(F("[TLS][CA] Для выбранного режима нужен читаемый CA-сертификат. Откройте Подключение → CA-сертификат и загрузите PEM."));
       }
       break;
 
@@ -200,6 +196,9 @@ void mqttApplySettings() {
   s_justConnected = false;
   s_discoveryPending = false;
   s_onlinePending = false;
+  s_wasConnected = false;
+  s_waitingWifi = false;
+  s_attemptNumber = 0;
 
   // Настройки изменили — значит, есть смысл попробовать снова.
   s_configRejected = false;
@@ -210,11 +209,13 @@ void mqttApplySettings() {
   if (const char *error = settingsValidationError(settings)) {
     setMqttError(error);
     s_configRejected = true;
+    Serial.printf("[MQTT][CONFIG] Настройки не применены: %s\n", error);
+    Serial.println(F("[MQTT][PAUSED] Откройте Подключение в веб-интерфейсе, исправьте поля MQTT и сохраните."));
     return;
   }
 
   if (!mqttEnabled()) {
-    Serial.println(F("[mqtt] адрес брокера не задан, MQTT выключен"));
+    Serial.println(F("[MQTT][OFF] Адрес брокера пуст. MQTT выключен; измерения и веб-интерфейс работают автономно."));
     return;
   }
 
@@ -238,7 +239,7 @@ static bool publishDiscovery(const char *key, const char *name, const char *devC
                                  devClass, unit, valueTemplate, diagnostic, configUrl);
 
   if (!len || !client.publish(cfgTopic, payload, true)) {
-    Serial.printf("[mqtt] discovery %s не отправлен (%u байт), увеличьте MQTT_BUFFER_SIZE\n", key,
+    Serial.printf("[MQTT][DISCOVERY] Не удалось отправить %s (%u байт). Проверьте соединение и размер MQTT-буфера; будет повтор.\n", key,
                   (unsigned)len);
     return false;
   }
@@ -274,7 +275,7 @@ static bool resolveBroker() {
   if (s_brokerResolved) return true;
 
   if (!WiFi.hostByName(settings.mqttHost, s_brokerIp, MQTT_DNS_TIMEOUT_MS)) {
-    Serial.printf("[mqtt] имя %s не разрешается\n", settings.mqttHost);
+    Serial.printf("[MQTT][DNS] Не найден адрес брокера '%s'. Проверьте написание имени, DNS роутера или укажите IP вместо имени.\n", settings.mqttHost);
     setMqttError("Не удалось определить IP брокера. Проверьте адрес и DNS.");
     return false;
   }
@@ -299,13 +300,16 @@ static bool prepareTls() {
       s_ca = caLoad();
       if (!s_ca) {
         setTlsError(caLastError());
+        Serial.println(F("[TLS][CA] Загрузите корневой CA в разделе Подключение. Без него проверка сертификата брокера невозможна."));
         return false;
       }
       tls->setTrustAnchors(s_ca);
     }
 
     if (!timeIsSet()) {
-      setTlsError("часы не выставлены, жду NTP");
+      setTlsError("Время ещё не установлено. TLS по CA ожидает синхронизации NTP.");
+      Serial.printf("[TLS][TIME] NTP: %s. Проверьте доступ к серверу времени (UDP 123) или укажите локальный NTP.\n",
+                    settings.ntpServer[0] ? settings.ntpServer : NTP_SERVER_DEFAULT);
       return false;
     }
     tls->setX509Time(time(nullptr));
@@ -339,6 +343,9 @@ static bool prepareTls() {
 
 // false, если попытка не удалась: вызывающий увеличит backoff.
 static bool tryConnect() {
+  ++s_attemptNumber;
+  Serial.printf("[MQTT][CONNECT] Попытка %lu: %s:%u, %s, Client ID=%s.\n", s_attemptNumber,
+                settings.mqttHost, settings.mqttPort, s_tlsClient ? "TLS" : "обычный TCP", deviceId());
   if (!resolveBroker()) return false;
   if (s_tlsClient && !prepareTls()) return false;
 
@@ -355,22 +362,23 @@ static bool tryConnect() {
   // Последняя воля: если устройство пропадёт, брокер сам разошлёт "offline".
   if (!client.connect(deviceId(), user, pass, availTopic, 0, true, "offline")) {
     const int state = client.state();
-    setMqttError(describeState(state));
-    Serial.printf("[mqtt] %s (state=%d)\n", s_mqttError, state);
+    reportFailure(state);
 
     if (s_tlsClient) {
       // Без этого «не подключается» неотличимо от неверного пароля.
-      char buf[64];
+      char buf[128];
       BearSSL::WiFiClientSecure *tls = s_tlsClient;
       int err = tls->getLastSSLError(buf, sizeof(buf));
-      if (err) setTlsError(buf);
-    }
-
-    if (stateIsPermanent(state)) {
-      // Дальше повторять нечего: следующая попытка получит тот же ответ, а портал
-      // на время каждой из них перестаёт отвечать. Ждём правки настроек.
-      s_configRejected = true;
-      Serial.println(F("[mqtt] это ошибка настроек, попытки остановлены до их изменения"));
+      if (err) {
+        setTlsError("Не удалось установить TLS. Подробности и подсказка выведены в Serial.");
+        Serial.printf("[TLS][ERROR] Код %d: %s\n", err, buf);
+        if (settings.mqttTlsMode == TLS_CA)
+          Serial.println(F("[TLS][CHECK] Проверьте корневой CA, срок сертификата, часы NTP и совпадение адреса брокера с именем в сертификате."));
+        else if (settings.mqttTlsMode == TLS_FINGERPRINT)
+          Serial.println(F("[TLS][CHECK] Сверьте SHA-1 с текущим сертификатом брокера. После перевыпуска сертификата отпечаток меняется."));
+        else
+          Serial.println(F("[TLS][CHECK] Убедитесь, что на выбранном порту включён TLS и брокер поддерживает совместимые параметры TLS."));
+      }
     }
 
     // Адрес мог смениться (DHCP на стороне брокера) — разрешаем имя заново.
@@ -384,7 +392,9 @@ static bool tryConnect() {
                   ESP.getMaxFreeBlockSize());
   }
   s_mqttError[0] = '\0';
-  Serial.println(F("[mqtt] подключено"));
+  Serial.printf("[MQTT][OK] Подключено к %s:%u. Показания: %s/state, интервал %u с.\n",
+                settings.mqttHost, settings.mqttPort, settings.mqttBase, settings.mqttIntervalS);
+  s_wasConnected = true;
 
   s_onlinePending = true;
   s_discoveryPending = true;
@@ -394,7 +404,25 @@ static bool tryConnect() {
 }
 
 void mqttLoop() {
-  if (!mqttEnabled() || WiFi.status() != WL_CONNECTED) return;
+  if (!mqttEnabled()) return;
+  if (WiFi.status() != WL_CONNECTED) {
+    if (!s_waitingWifi) {
+      Serial.println(F("[MQTT][WIFI] Нет подключения к Wi-Fi. Ожидаю сеть; настройки брокера пока не проверяются."));
+      setMqttError("Нет Wi-Fi. MQTT подключится после восстановления сети.");
+      s_waitingWifi = true;
+    }
+    return;
+  }
+  if (s_waitingWifi) {
+    Serial.println(F("[MQTT][WIFI] Wi-Fi восстановлен. Продолжаю подключение к брокеру."));
+    s_waitingWifi = false;
+  }
+
+  if (s_wasConnected && !client.connected()) {
+    s_wasConnected = false;
+    s_brokerResolved = false;
+    reportFailure(MQTT_CONNECTION_LOST);
+  }
 
   if (client.connected()) {
     client.loop();
@@ -417,7 +445,7 @@ void mqttLoop() {
     s_backoffMs = MQTT_RECONNECT_MIN_MS;
   } else {
     s_backoffMs = min(s_backoffMs * 2, (unsigned long)MQTT_RECONNECT_MAX_MS);
-    if (!s_configRejected) Serial.printf("[mqtt] повтор через %lu с\n", s_backoffMs / 1000);
+    if (!s_configRejected) Serial.printf("[MQTT][RETRY] Следующая попытка через %lu с. Веб-интерфейс доступен для исправления настроек.\n", s_backoffMs / 1000);
   }
 
   // Отсчёт backoff ведём от конца попытки, а не от начала: рукопожатие TLS

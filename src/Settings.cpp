@@ -33,10 +33,7 @@ static bool saveError(const char *message) {
 }
 
 static void ensurePortalPassword() {
-  if (strlen(settings.portalPass) >= 12) return;
-  snprintf(settings.portalPass, sizeof(settings.portalPass), "%08lx%08lx",
-           (unsigned long)ESP.random(), (unsigned long)ESP.random());
-  settingsSave();
+  if (settingsEnsurePortalPassword(settings)) settingsSave();
 }
 
 const char *deviceId() { return s_deviceId; }

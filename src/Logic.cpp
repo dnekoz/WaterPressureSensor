@@ -5,6 +5,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#ifdef ARDUINO_ARCH_ESP8266
+#include <pgmspace.h>
+#define MQTT_TEXT(value) PSTR(value)
+#else
+#define MQTT_TEXT(value) value
+#endif
 
 // Версия прошивки попадает в discovery-payload. Config.h сюда не включаем: он
 // тянет Arduino-специфику, а этот модуль должен собираться и на хосте. Значение
@@ -21,6 +27,32 @@ static void copyField(char *dst, size_t size, const char *src) {
   if (!size) return;
   strncpy(dst, src ? src : "", size - 1);
   dst[size - 1] = '\0';
+}
+
+bool settingsEnsurePortalPassword(Settings &s) {
+  bool valid = strlen(s.portalPass) >= 8;
+  for (const unsigned char *p = (const unsigned char *)s.portalPass; *p; ++p)
+    if (*p < 33 || *p > 126) valid = false;
+  if (valid) return false;
+  copyField(s.portalPass, sizeof(s.portalPass), PORTAL_INITIAL_PASSWORD);
+  return true;
+}
+
+// Коды CONNACK MQTT 3.1.1 и транспортные состояния PubSubClient 2.8.
+MqttDiagnostic mqttDiagnostic(int state) {
+  switch (state) {
+    case 1: return {MQTT_TEXT("Брокер не поддерживает выбранную версию MQTT."), MQTT_TEXT("Включите MQTT 3.1.1 на брокере и проверьте, что указан именно MQTT-порт."), true};
+    case 2: return {MQTT_TEXT("Брокер отклонил идентификатор устройства."), MQTT_TEXT("Проверьте правила Client ID на брокере и отсутствие другого клиента с таким же ID."), true};
+    case 3: return {MQTT_TEXT("Брокер ответил, но временно не принимает подключения."), MQTT_TEXT("Проверьте состояние сервиса MQTT, его нагрузку и журнал брокера."), false};
+    case 4: return {MQTT_TEXT("Брокер отклонил логин или пароль MQTT."), MQTT_TEXT("Проверьте пользователя и пароль в разделе Подключение; пустое поле сохраняет прежний пароль."), true};
+    case 5: return {MQTT_TEXT("Брокер запретил этому устройству подключение."), MQTT_TEXT("Проверьте логин и пароль MQTT, права пользователя и правила доступа (ACL) на брокере."), true};
+    case -4: return {MQTT_TEXT("Соединение открыто, но брокер не прислал ответ MQTT (CONNACK)."), MQTT_TEXT("Проверьте MQTT-порт, режим TLS и журнал брокера; на этом порту может работать другой сервис."), false};
+    case -3: return {MQTT_TEXT("Связь с MQTT-брокером прервалась."), MQTT_TEXT("Проверьте Wi-Fi, доступность брокера и отсутствие другого клиента с тем же Client ID."), false};
+    case -2: return {MQTT_TEXT("Не удалось установить соединение с MQTT-брокером."), MQTT_TEXT("Проверьте адрес и порт, запуск брокера, доступ из этой Wi-Fi сети и межсетевой экран; для TLS смотрите строку [TLS]."), false};
+    case -1: return {MQTT_TEXT("Соединение с MQTT-брокером закрыто."), MQTT_TEXT("Устройство повторит подключение автоматически."), false};
+    case 0: return {MQTT_TEXT("MQTT подключён."), MQTT_TEXT(""), false};
+    default: return {MQTT_TEXT("Неизвестная ошибка MQTT."), MQTT_TEXT("Сохраните код ошибки и проверьте журнал брокера."), false};
+  }
 }
 
 // ---------------------------------------------------------------- настройки ---
@@ -384,7 +416,7 @@ bool settingsPatch(JsonObjectConst patch, Settings &candidate, char *error, size
       const char *value = pair.value().as<const char *>();
       if (strlen(value) >= field.size) return fail("Слишком длинное значение (ограничение в байтах UTF-8).");
       if (!strcmp(key, "portalPass")) {
-        if (strlen(value) < 12) return fail("Пароль интерфейса: от 12 до 63 символов ASCII.");
+        if (strlen(value) < 8) return fail("Пароль интерфейса: от 8 до 63 символов ASCII.");
         for (const char *p = value; *p; ++p)
           if ((unsigned char)*p < 33 || (unsigned char)*p > 126) return fail("Пароль: печатные символы ASCII без пробелов.");
       }

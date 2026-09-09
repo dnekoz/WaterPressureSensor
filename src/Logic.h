@@ -60,6 +60,16 @@ struct Settings {
 #define NTP_SERVER_DEFAULT "pool.ntp.org"
 
 void settingsDefaults(Settings &s, const char *deviceId);
+constexpr const char *PORTAL_INITIAL_PASSWORD = "water1234";
+bool settingsEnsurePortalPassword(Settings &s);
+
+struct MqttDiagnostic {
+  // На ESP8266 строки во flash; читать через *_P/FlashStringHelper.
+  const char *reason;
+  const char *action;
+  bool permanent;
+};
+MqttDiagnostic mqttDiagnostic(int state);
 
 // Разбирает отпечаток сертификата: "AA:BB:..:TT" или сплошные 40 hex-символов,
 // регистр любой. false, если это не ровно TLS_FINGERPRINT_LEN байт — тогда

@@ -10,6 +10,32 @@ const messages = (form, message, error = false) => {
   target.classList.toggle('error', error);
 };
 
+const passwordFields = Array.from(document.querySelectorAll('input[type="password"]'));
+function passwordVisibility(input, visible) {
+  input.type = visible ? 'text' : 'password';
+  const button = input.parentElement.querySelector('.password-toggle');
+  const label = visible ? 'Скрыть пароль' : 'Показать пароль';
+  button.setAttribute('aria-label', label);
+  button.setAttribute('aria-pressed', String(visible));
+  button.title = label;
+  button.querySelector('use').setAttribute('href', visible ? '#i-eye-off' : '#i-eye');
+}
+passwordFields.forEach(input => {
+  input.dataset.passwordField = '';
+  const wrapper = document.createElement('div'); wrapper.className = 'password-field';
+  input.before(wrapper); wrapper.append(input);
+  const button = document.createElement('button');
+  button.type = 'button'; button.className = 'password-toggle';
+  button.setAttribute('aria-controls', input.id);
+  const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  icon.setAttribute('aria-hidden', 'true');
+  icon.append(document.createElementNS('http://www.w3.org/2000/svg', 'use'));
+  button.append(icon); wrapper.append(button);
+  button.addEventListener('click', () => passwordVisibility(input, input.type === 'password'));
+  passwordVisibility(input, false);
+});
+$('login-dialog').addEventListener('close', () => passwordVisibility($('login-password'), false));
+
 function syncTheme() {
   const dark = document.documentElement.dataset.theme === 'dark';
   const label = `Включить ${dark ? 'светлую' : 'тёмную'} тему`;
@@ -86,7 +112,7 @@ $('auth-button').addEventListener('click', async () => {
   if (!authenticated) return showLogin();
   try {
     await api('/api/logout', {method: 'POST'});
-    document.querySelectorAll('input[type=password]').forEach(input => { input.value = ''; });
+    passwordFields.forEach(input => { input.value = ''; passwordVisibility(input, false); });
     settingsData = null;
     setAuth(false);
   } catch (error) { text('connection-notice', error.message); $('connection-notice').hidden = false; }
@@ -230,7 +256,12 @@ async function loadSettings() {
     // Retry through explicit navigation or login; keep fields locked until loaded.
   } finally { settingsLoading = false; setAuth(authenticated && Boolean(settingsData)); }
 }
-function updateWifiKeep() { $('wifi-password').disabled = $('wifi-keep').checked; }
+function updateWifiKeep() {
+  const input = $('wifi-password');
+  input.disabled = $('wifi-keep').checked;
+  input.parentElement.querySelector('.password-toggle').disabled = input.disabled;
+  if (input.disabled) passwordVisibility(input, false);
+}
 $('wifi-keep').addEventListener('change', updateWifiKeep);
 $('wifi-ssid').addEventListener('input', () => { if ($('wifi-ssid').value !== settingsData?.wifiSsid) $('wifi-keep').checked = false; updateWifiKeep(); });
 function updateTls() {

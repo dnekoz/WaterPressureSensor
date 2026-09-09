@@ -49,11 +49,41 @@ static void test_patch_keeps_omitted_secrets() {
 static void test_portal_password_limits() {
   TEST_ASSERT_FALSE(patch("{\"portalPass\":\"short\"}"));
   TEST_ASSERT_FALSE(patch("{\"portalPass\":\"password with spaces\"}"));
+  TEST_ASSERT_FALSE(patch("{\"portalPass\":\"1234567\"}"));
+  TEST_ASSERT_TRUE(patch("{\"portalPass\":\"water1234\"}"));
   TEST_ASSERT_TRUE(patch("{\"portalPass\":\"long-password-123\"}"));
   JsonDocument doc;
   settingsToJson(doc.to<JsonObject>(), s);
   Settings loaded{}; settingsFromJson(doc.as<JsonObjectConst>(), loaded);
   TEST_ASSERT_EQUAL_STRING(s.portalPass, loaded.portalPass);
+}
+static void test_simple_initial_password_and_preserved_custom_password() {
+  TEST_ASSERT_TRUE(settingsEnsurePortalPassword(s));
+  TEST_ASSERT_EQUAL_STRING("water1234", s.portalPass);
+  TEST_ASSERT_FALSE(settingsEnsurePortalPassword(s));
+  strcpy(s.portalPass, "custom-8");
+  TEST_ASSERT_FALSE(settingsEnsurePortalPassword(s));
+  TEST_ASSERT_EQUAL_STRING("custom-8", s.portalPass);
+  strcpy(s.portalPass, "aabbccddeeff0011");
+  TEST_ASSERT_FALSE(settingsEnsurePortalPassword(s)); // don't reset a previously generated or user-selected password
+}
+static void test_bad_stored_password_gets_usable_initial_password() {
+  strcpy(s.portalPass, "short");
+  TEST_ASSERT_TRUE(settingsEnsurePortalPassword(s));
+  TEST_ASSERT_EQUAL_STRING("water1234", s.portalPass);
+  strcpy(s.portalPass, "not valid pass");
+  TEST_ASSERT_TRUE(settingsEnsurePortalPassword(s));
+}
+static void test_mqtt_diagnostics_distinguish_configuration_and_transport_errors() {
+  TEST_ASSERT_TRUE(mqttDiagnostic(4).permanent);
+  TEST_ASSERT_TRUE(mqttDiagnostic(5).permanent);
+  TEST_ASSERT_FALSE(mqttDiagnostic(-2).permanent);
+  TEST_ASSERT_FALSE(mqttDiagnostic(-4).permanent);
+  TEST_ASSERT_FALSE(mqttDiagnostic(3).permanent);
+  TEST_ASSERT_NOT_NULL(strstr(mqttDiagnostic(4).reason, "логин или пароль"));
+  TEST_ASSERT_NOT_NULL(strstr(mqttDiagnostic(5).action, "ACL"));
+  TEST_ASSERT_NOT_NULL(strstr(mqttDiagnostic(-4).reason, "CONNACK"));
+  TEST_ASSERT_NOT_NULL(strstr(mqttDiagnostic(-2).action, "порт"));
 }
 static void test_utf8_byte_limit() {
   TEST_ASSERT_FALSE(patch("{\"deviceName\":\"01234567890123456789012345678901\"}"));
@@ -182,6 +212,9 @@ int main() {
   RUN_TEST(test_topics_and_hosts_validated);
   RUN_TEST(test_patch_keeps_omitted_secrets);
   RUN_TEST(test_portal_password_limits);
+  RUN_TEST(test_simple_initial_password_and_preserved_custom_password);
+  RUN_TEST(test_bad_stored_password_gets_usable_initial_password);
+  RUN_TEST(test_mqtt_diagnostics_distinguish_configuration_and_transport_errors);
   RUN_TEST(test_utf8_byte_limit);
   RUN_TEST(test_sanitize_infinity);
   RUN_TEST(test_external_resistor_range);

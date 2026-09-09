@@ -183,6 +183,7 @@ static void handleSaveSettings() {
   Settings candidate = settings;
   char error[192];
   if (!settingsPatch(doc.as<JsonObjectConst>(), candidate, error, sizeof(error))) {
+    Serial.printf("[CONFIG][ERROR] Настройки не сохранены: %s\n", error);
     reply(400, error, true); return;
   }
   bool passwordChanged = strcmp(candidate.portalPass, settings.portalPass) != 0;
@@ -250,6 +251,8 @@ static void startAp() {
   if (s_apActive) {
     dns.start(53, "*", WiFi.softAPIP());
     Serial.printf("[wifi] AP %s, http://%s/\n", s_apName, WiFi.softAPIP().toString().c_str());
+  } else {
+    Serial.println(F("[WIFI][ERROR] Не удалось открыть точку доступа. Проверьте пароль (8–63 символа) и свободную память."));
   }
 }
 
@@ -417,6 +420,12 @@ void portalLoop() {
     s_disconnectedMs = now;
   }
   bool connected = WiFi.status() == WL_CONNECTED;
+  static bool wasConnected = false;
+  if (connected != wasConnected) {
+    if (connected) Serial.printf("[WIFI][OK] Сеть: %s. Интерфейс: http://%s/\n", WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
+    else Serial.println(F("[WIFI][LOST] Связь с роутером потеряна. Пробую подключиться снова."));
+    wasConnected = connected;
+  }
   if (connected) {
     s_disconnectedMs = now;
     s_apOffered = false;
