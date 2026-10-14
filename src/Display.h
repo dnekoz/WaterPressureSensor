@@ -15,6 +15,9 @@ void displayBoot();
 // Режим настройки: имя точки доступа, пароль и адрес портала.
 void displayPortal(const char *apSsid, const char *apPass, const char *ip);
 
+// Временный экран с паролем для открытого окна входа в веб-интерфейсе.
+void displayLoginPassword(const char *password);
+
 // Промежуточное состояние с одной-двумя строками текста.
 void displayMessage(const char *line1, const char *line2 = nullptr);
 

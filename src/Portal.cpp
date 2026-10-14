@@ -36,6 +36,7 @@ static char s_session[33] = "";
 static uint32_t s_sessionMs = 0;
 static uint32_t s_loginAttemptMs = 0;
 static bool s_loginAttempted = false;
+static bool s_loginPasswordVisible = false;
 static bool s_uploadOk = false;
 static bool s_uploadStarted = false;
 static bool s_uploadFinished = false;
@@ -93,6 +94,27 @@ static bool readJson(JsonDocument &doc) {
   return true;
 }
 
+static void redrawDisplay() {
+  if (!portalDrawIfActive()) {
+    displayReading(sensorRead(), portalWifiConnected(), mqttEnabled(), mqttConnected(),
+                   mqttTlsActive());
+  }
+}
+
+static void handleLoginDisplay() {
+  // Окно ещё не авторизовано; пароль показывается только на физическом OLED.
+  if (!mutationHeader()) { reply(403, "Откройте страницу устройства.", true); return; }
+  JsonDocument doc;
+  if (!readJson(doc)) return;
+  if (!doc["visible"].is<bool>()) {
+    reply(400, "Укажите, открыто ли окно входа.", true); return;
+  }
+  s_loginPasswordVisible = doc["visible"].as<bool>();
+  // Обновляем экран до следующей попытки MQTT, которая может задержать loop().
+  redrawDisplay();
+  reply(200, "Экран обновлён.");
+}
+
 static void handleLogin() {
   if (!mutationHeader()) { reply(403, "Откройте страницу устройства.", true); return; }
   if (s_loginAttempted && uint32_t(millis() - s_loginAttemptMs) < 3000) {
@@ -111,6 +133,8 @@ static void handleLogin() {
            (unsigned long)ESP.random(), (unsigned long)ESP.random(),
            (unsigned long)ESP.random(), (unsigned long)ESP.random());
   s_sessionMs = millis();
+  s_loginPasswordVisible = false;
+  redrawDisplay();
   server.sendHeader("Set-Cookie", String("wps_session=") + s_session + "; Path=/; HttpOnly; SameSite=Strict; Max-Age=3600");
   reply(200, "Вы вошли в интерфейс.");
 }
@@ -368,6 +392,7 @@ void portalBegin() {
   server.on("/reading", HTTP_GET, handleReading);
   server.on("/api/status", HTTP_GET, handleStatus);
   server.on("/api/login", HTTP_POST, handleLogin);
+  server.on("/api/login/display", HTTP_POST, handleLoginDisplay);
   server.on("/api/logout", HTTP_POST, handleLogout);
   server.on("/api/settings", HTTP_GET, handleGetSettings);
   server.on("/api/settings", HTTP_POST, handleSaveSettings);
@@ -454,6 +479,10 @@ bool portalConsumeSettingsChanged() {
   return changed;
 }
 bool portalDrawIfActive() {
+  if (s_loginPasswordVisible) {
+    displayLoginPassword(settings.portalPass);
+    return true;
+  }
   if (!s_apActive || portalWifiConnected()) return false;
   displayPortal(s_apName, settings.portalPass, WiFi.softAPIP().toString().c_str());
   return true;

@@ -76,6 +76,38 @@ void displayPortal(const char *apSsid, const char *apPass, const char *ip) {
   oled.setFont(&FreeSans9pt7b);
 }
 
+void displayLoginPassword(const char *password) {
+  if (!s_ready) return;
+
+  oled.clearDisplay();
+  oled.setFont(nullptr);
+  oled.setTextWrap(false);
+  oled.setTextSize(1);
+  oled.setCursor(0, 0);
+  oled.print(F("SETTINGS PASSWORD"));
+
+  const size_t length = strlen(password);
+  if (length <= 10) {
+    // Стандартный пароль читается крупно: 10 символов по 12 пикселей.
+    oled.setTextSize(2);
+    oled.setCursor((SCREEN_WIDTH - length * 12) / 2, 24);
+    oled.print(password);
+  } else {
+    // Допустимые 63 символа помещаются в три строки по 21 символу.
+    char line[22];
+    for (size_t offset = 0; offset < length && offset < 63; offset += 21) {
+      const size_t count = min(size_t(21), length - offset);
+      memcpy(line, password + offset, count);
+      line[count] = '\0';
+      oled.setCursor(0, 18 + (offset / 21) * 10);
+      oled.print(line);
+    }
+  }
+  oled.display();
+  oled.setTextWrap(true);
+  oled.setFont(&FreeSans9pt7b);
+}
+
 void displayMessage(const char *line1, const char *line2) {
   if (!s_ready) return;
 

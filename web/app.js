@@ -34,7 +34,10 @@ passwordFields.forEach(input => {
   button.addEventListener('click', () => passwordVisibility(input, input.type === 'password'));
   passwordVisibility(input, false);
 });
-$('login-dialog').addEventListener('close', () => passwordVisibility($('login-password'), false));
+$('login-dialog').addEventListener('close', () => {
+  passwordVisibility($('login-password'), false);
+  notifyLoginDisplay(false);
+});
 
 function syncTheme() {
   const dark = document.documentElement.dataset.theme === 'dark';
@@ -103,8 +106,22 @@ function setAuth(value) {
   $('auth-button').setAttribute('aria-label', label);
   if (changed && value && !settingsData) loadSettings();
 }
+let loginDisplayRequest = Promise.resolve();
+function notifyLoginDisplay(visible) {
+  // Последовательные запросы: быстрый крестик не должен обгонять показ пароля.
+  loginDisplayRequest = loginDisplayRequest.then(() => api('/api/login/display', {
+    method: 'POST', body: {visible}, loginOn401: false
+  })).catch(error => {
+    if ($('login-dialog').open) messages($('login-form'), error.message, true);
+  });
+  return loginDisplayRequest;
+}
 function showLogin() {
-  if (!$('login-dialog').open) { messages($('login-form'), ''); $('login-dialog').showModal(); }
+  if (!$('login-dialog').open) {
+    messages($('login-form'), '');
+    $('login-dialog').showModal();
+    notifyLoginDisplay(true);
+  }
 }
 document.querySelectorAll('[data-login]').forEach(button => button.addEventListener('click', showLogin));
 document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => button.closest('dialog').close()));
@@ -123,6 +140,7 @@ $('login-form').addEventListener('submit', async event => {
   button.disabled = true;
   messages(form, 'Проверяем пароль…');
   try {
+    await loginDisplayRequest;
     await api('/api/login', {method: 'POST', body: {password: $('login-password').value}, loginOn401: false});
     $('login-password').value = '';
     $('login-dialog').close();

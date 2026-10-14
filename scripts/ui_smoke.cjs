@@ -37,7 +37,32 @@ fs.mkdirSync(output, {recursive: true});
     }
     await page.reload();
     assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark', 'Theme persists after reload');
+    async function waitForOledPassword(visible) {
+      await page.waitForFunction(async expected => {
+        const response = await fetch('/api/status');
+        return (await response.json()).login_password_visible === expected;
+      }, visible, {timeout:5000});
+    }
+    // Без входа можно попросить показать пароль только на физическом экране.
     await page.locator('#auth-button').click();
+    await waitForOledPassword(true);
+    await page.locator('#login-dialog [data-close]').click();
+    await waitForOledPassword(false);
+    assert.equal(await page.locator('#login-dialog').isVisible(), false);
+    assert.equal(await page.locator('[data-protected]').first().evaluate(fieldset => fieldset.disabled), true, 'Closing login does not grant settings access');
+    // Проверяем порядок запросов при быстром закрытии окна.
+    await page.route('**/api/login/display', async route => {
+      if (route.request().postDataJSON().visible) await new Promise(resolve => setTimeout(resolve, 200));
+      await route.continue();
+    });
+    const hiddenAfterQuickClose = page.waitForResponse(response => response.url().endsWith('/api/login/display') && response.request().postDataJSON().visible === false);
+    await page.locator('#auth-button').click();
+    await page.locator('#login-dialog [data-close]').click();
+    await hiddenAfterQuickClose;
+    await waitForOledPassword(false);
+    await page.unroute('**/api/login/display');
+    await page.locator('#auth-button').click();
+    await waitForOledPassword(true);
     assert.equal(await page.locator('.password-toggle').count(), 5, 'Every password field has a visibility toggle');
     async function checkPasswordToggle(id) {
       const input = page.locator('#' + id);
@@ -56,9 +81,12 @@ fs.mkdirSync(output, {recursive: true});
     await page.locator('#login-password').fill('wrong');
     await page.locator('#login-form [type=submit]').click();
     await page.getByText('Неверный пароль интерфейса.', {exact:true}).waitFor();
+    assert.equal(await page.locator('#login-dialog').isVisible(), true);
+    await waitForOledPassword(true);
     await page.locator('#login-password').fill('preview-access123');
     await page.locator('#login-form [type=submit]').click();
     await page.waitForFunction(() => !document.getElementById('mqttHost').disabled && document.getElementById('mqttHost').value.length > 0);
+    await waitForOledPassword(false);
     await page.locator('.navigation a[href="#connection"]').click();
     await page.locator('#wifi-keep').uncheck();
     await checkPasswordToggle('wifi-password');
@@ -111,6 +139,6 @@ fs.mkdirSync(output, {recursive: true});
     await page.waitForFunction(() => document.querySelector('[data-protected]').disabled);
     assert.ok(await page.locator('[data-password-field]').evaluateAll(inputs => inputs.every(input => input.value === '' && input.type === 'password')), 'Logout clears and hides all password fields, including revealed inputs');
     assert.deepEqual(errors, [], 'No browser JavaScript exceptions');
-    console.log(`PASS: Chrome ${browser.version()}, 40 layouts; themes, auth, forms, Wi-Fi scan, calibration, fault and reconnect. Screenshots: ${output}`);
+    console.log(`PASS: Chrome ${browser.version()}, 40 layouts; themes, OLED login password lifecycle, auth, forms, Wi-Fi scan, calibration, fault and reconnect. Screenshots: ${output}`);
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode=1; });
