@@ -1,0 +1,37 @@
+{
+  "source_sha256": "5a120b7fcb431eaedb97a30b13e525e245f22529de7624506b10cf86196e7dca",
+  "confirmed_material": {
+    "substrate_mm": 2.0,
+    "copper_um": 70,
+    "sides": 1,
+    "etchant": "FeCl3"
+  },
+  "status": "SETUP_AND_COUPON_REQUIRED_NOT_MACHINE_VALIDATED",
+  "coordinate_system": "G54, bottom copper facing up; X=36-PCB_X, Y=60-PCB_Y; no further mirror",
+  "origin_for_raw_exports": "Drill/place origin in CAM copy at PCB (0,60); raw CAM inputs NOT mirrored",
+  "holes": {
+    "contacts_actual_D1mm": 24,
+    "of_these_enlarged_from_D0_9mm": 4,
+    "D2mm_pilots_only_for_5xD3_2_plus_1xD3_25": 6
+  },
+  "trial_settings": {
+    "S_command": 10000,
+    "clearance_mm": 5.0,
+    "contact_drill_depth_mm": -2.5,
+    "pilot_drill_depth_mm": -2.85,
+    "spindle_calibration": "UNKNOWN: read $30/$31/$32 and verify actual rpm",
+    "drill_point_angle_assumed_degrees": 118,
+    "total_blank_thickness_assumed_at_most_mm": 2.1
+  },
+  "resist_experiment": {
+    "tool_effective_width_mm": 0.20267949192431123,
+    "guard_mm": 0.01,
+    "stepover_mm": 0.1,
+    "depth_relative_to_bare_copper_mm": -0.005,
+    "segments": 2227,
+    "cut_length_mm": 19920.5,
+    "cutting_time_min_without_retracts": 132.8
+  },
+  "outline": "Requires a 1 mm end mill NOT in current tool inventory; tabs approx 1.5 mm wide, 0.5+ mm residual",
+  "warning": "No programs have been run on a machine; nonconductive-film probing and etch resistance unresolved"
+}

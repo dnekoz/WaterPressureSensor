@@ -1,0 +1,7 @@
+Reference,Quantity,Description,Part_number,Assembly_note
+U1,1,WeMos D1 Mini USB Type-C,User supplied module,Check actual 2x8 header fit before fabrication
+U1 sockets,2,Female socket 1x8 2.54mm H8.5mm,Generic compatible socket,1.0mm carrier drill; verify pin size
+J1,1,Elevated OLED socket 1x4 2.54mm,Samtec ESW-104-44-G-S,18.67mm body; verify OLED mating and underside clearance
+J2,1,RJ10 4P4C right-angle PCB jack,EVERCOM 5301-4P4C / 5301-440xxx family,Exact delivered part drawing must match the footprint
+OLED,1,0.96in SSD1306 128x64 I2C module,User supplied module,27x27mm reference envelope; 1 GND 2 VCC 3 SCL 4 SDA
+H1-H4,4,Mounting clearance holes 3.2mm M3,Mechanical holes,No purchased electronic parts

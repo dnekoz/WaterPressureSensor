@@ -1,0 +1,356 @@
+(Block-name: Header)
+(Block-expand: 0)
+(Block-enable: 1)
+(DRILL D2 - 6 HOLES)
+(SETUP REQUIRED - NOT MACHINE VALIDATED)
+(VERIFY G54 Z0, CLEARANCE, RPM COMMAND AND TOOL)
+G17 G21 G40 G49 G54 G80 G90 G94
+M5
+T2
+M0
+G0 Z5.000
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+M3 S10000
+G4 P2
+G0 Z5.000
+G0 X3.5000 Y3.5000
+G0 Z0.500
+G1 Z-0.3000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-0.6000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-0.9000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-1.2000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-1.5000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-1.8000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.1000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.4000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.7000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.8500 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G0 Z5.000
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G0 X32.5000 Y3.5000
+G0 Z0.500
+G1 Z-0.3000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-0.6000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-0.9000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-1.2000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-1.5000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-1.8000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.1000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.4000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.7000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.8500 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G0 Z5.000
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G0 X32.5000 Y56.5000
+G0 Z0.500
+G1 Z-0.3000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-0.6000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-0.9000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-1.2000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-1.5000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-1.8000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.1000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.4000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.7000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.8500 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G0 Z5.000
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G0 X23.5900 Y51.3500
+G0 Z0.500
+G1 Z-0.3000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-0.6000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-0.9000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-1.2000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-1.5000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-1.8000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.1000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.4000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.7000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.8500 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G0 Z5.000
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G0 X16.0900 Y51.3500
+G0 Z0.500
+G1 Z-0.3000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-0.6000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-0.9000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-1.2000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-1.5000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-1.8000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.1000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.4000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.7000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.8500 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G0 Z5.000
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G0 X3.5000 Y56.5000
+G0 Z0.500
+G1 Z-0.3000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-0.6000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-0.9000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-1.2000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-1.5000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-1.8000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.1000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.4000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.7000 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G1 Z-2.8500 F40
+G0 Z0.500
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+G0 Z5.000
+(Block-name: block)
+(Block-expand: 0)
+(Block-enable: 1)
+M5
+M9
+M30

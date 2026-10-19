@@ -1,0 +1,207 @@
+(footprint "OLED_ESW_1x04_P2.54_H18.67"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "Samtec ESW-104-44-G-S: 2.54 pitch, 18.67 body; mechanical mating check required")
+	(property "Reference" ""
+		(at 0 0 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "073ebbb9-a31f-414f-8324-a67f84f3b810")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Value" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "ab8910be-f831-49d7-9005-87eefdc029fa")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "2594d4b9-cfc7-4574-8bf9-3f221f2ce8d4")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "249da50c-2482-46cc-ba1e-7f0cc4dae220")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(attr through_hole)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -1.34 -1.66)
+		(end 1.34 -1.66)
+		(stroke
+			(width 0.12)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "426ef63a-58d4-4be2-a7f1-5874dc2f49c1")
+	)
+	(fp_line
+		(start -1.34 9.28)
+		(end -1.34 -1.66)
+		(stroke
+			(width 0.12)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "5d6e5f46-399b-4883-a9f2-e3dccf36fa84")
+	)
+	(fp_line
+		(start 1.34 -1.66)
+		(end 1.34 9.28)
+		(stroke
+			(width 0.12)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "6c71f245-a53e-483a-a92d-293082ce2d58")
+	)
+	(fp_line
+		(start 1.34 9.28)
+		(end -1.34 9.28)
+		(stroke
+			(width 0.12)
+			(type default)
+		)
+		(layer "F.SilkS")
+		(uuid "3d01220e-2307-41a3-8221-8a8f5d16fc82")
+	)
+	(fp_line
+		(start -1.8 -2.2)
+		(end 1.8 -2.2)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(layer "F.CrtYd")
+		(uuid "b57eb167-50af-4165-9373-ed30032a9e2f")
+	)
+	(fp_line
+		(start -1.8 9.82)
+		(end -1.8 -2.2)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(layer "F.CrtYd")
+		(uuid "bc73ee0b-3b70-400c-b797-196e2be9ae90")
+	)
+	(fp_line
+		(start 1.8 -2.2)
+		(end 1.8 9.82)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(layer "F.CrtYd")
+		(uuid "76cc1a33-2d34-4d49-b061-8657fefaaa8a")
+	)
+	(fp_line
+		(start 1.8 9.82)
+		(end -1.8 9.82)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(layer "F.CrtYd")
+		(uuid "7ae0a4ed-a369-4bc6-b426-c5532ec38ed0")
+	)
+	(fp_line
+		(start -1.205 -1.525)
+		(end 1.205 -1.525)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(layer "F.Fab")
+		(uuid "98146a7b-7e1a-4a14-a7a3-77e3310a36ac")
+	)
+	(fp_line
+		(start -1.205 9.145)
+		(end -1.205 -1.525)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(layer "F.Fab")
+		(uuid "ef9694ca-d723-4f19-8a4f-c0768a2e8608")
+	)
+	(fp_line
+		(start 1.205 -1.525)
+		(end 1.205 9.145)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(layer "F.Fab")
+		(uuid "1bdb4166-fb91-4a16-9d50-1a7fb710ad0d")
+	)
+	(fp_line
+		(start 1.205 9.145)
+		(end -1.205 9.145)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(layer "F.Fab")
+		(uuid "a2eb0487-9cad-4dd3-b02a-2ee0c4e88846")
+	)
+	(pad "1" thru_hole rect
+		(at 0 0)
+		(size 1.8 1.8)
+		(drill 1)
+		(layers "B.Cu" "B.Mask")
+		(remove_unused_layers no)
+		(thermal_bridge_angle 45)
+		(uuid "88e9548f-cc11-413e-ab06-97b275fa9732")
+	)
+	(pad "2" thru_hole circle
+		(at 0 2.54)
+		(size 1.8 1.8)
+		(drill 1)
+		(layers "B.Cu" "B.Mask")
+		(remove_unused_layers no)
+		(uuid "2ca3599c-61cf-457f-b7b0-13742a9839db")
+	)
+	(pad "3" thru_hole circle
+		(at 0 5.08)
+		(size 1.8 1.8)
+		(drill 1)
+		(layers "B.Cu" "B.Mask")
+		(remove_unused_layers no)
+		(uuid "4ae5f5c1-1572-4c38-82d1-f4c3b83a0d53")
+	)
+	(pad "4" thru_hole circle
+		(at 0 7.62)
+		(size 1.8 1.8)
+		(drill 1)
+		(layers "B.Cu" "B.Mask")
+		(remove_unused_layers no)
+		(uuid "d8964889-e800-43bf-93c0-1eea1ee41f26")
+	)
+	(embedded_fonts no)
+)

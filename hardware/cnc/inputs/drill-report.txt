@@ -1,0 +1,25 @@
+Drill report for WaterPressureSensor-CAM.kicad_pcb
+Created on 2026-10-18T14:01:44
+
+Copper Layer Stackup:
+    =============================================================
+    L1 :  F.Cu                      front
+    L2 :  B.Cu                      back
+
+
+Drill file 'WaterPressureSensor-CAM.drl' contains
+    plated through holes:
+    =============================================================
+    T1  0.900mm  0.0354"  (4 holes))
+    T2  1.000mm  0.0394"  (20 holes))
+
+    Total plated holes count 24
+
+
+Not plated through holes are merged with plated holes
+    unplated through holes:
+    =============================================================
+    T3  3.200mm  0.1260"  (5 holes))
+    T4  3.250mm  0.1280"  (1 hole)
+
+    Total unplated holes count 6
