@@ -16,6 +16,7 @@
 #include "Sensor.h"
 #include "Settings.h"
 #include "WebAssets.h"
+#include "WifiConnection.h"
 #include "WifiDiagnostics.h"
 
 static ESP8266WebServer server(80);
@@ -494,12 +495,6 @@ void portalLoop() {
     s_apOffered = false;
   } else {
     if (!s_apOffered && uint32_t(now - s_disconnectedMs) >= 15000) startAp();
-    if (WiFi.SSID().length() && uint32_t(now - s_retryMs) >= 30000) {
-      s_retryMs = now;
-      wifiDiagnosticsBeforeRetry();
-      const bool started = WiFi.reconnect();
-      wifiDiagnosticsRetry(started);
-    }
   }
   // startAp() above can yield while switching radio modes. Use a fresh clock:
   // the earlier `now` can precede s_apStartedMs and underflow the unsigned age.

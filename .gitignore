@@ -3,3 +3,9 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+debug.log
+.gitignore
+hs_err_pid9696.log
+.gitignore
+hs_err_pid20960.log
+replay_pid9696.log
