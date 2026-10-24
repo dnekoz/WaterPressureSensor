@@ -8,6 +8,7 @@
 #include "Portal.h"
 #include "Sensor.h"
 #include "Settings.h"
+#include "WifiDiagnostics.h"
 
 static unsigned long s_lastSampleMs  = 0;
 static unsigned long s_lastDisplayMs = 0;
@@ -29,6 +30,8 @@ void setup() {
   delay(50);
   Serial.println();
   Serial.println(F(FW_NAME " v" FW_VERSION));
+  Serial.printf("[sys] NON-OS SDK: %s (Espressif release " WPS_NONOS_SDK_RELEASE ")\n",
+                ESP.getSdkVersion());
 
   // Настройки читаются первыми: от них зависят и калибровка датчика,
   // и значения полей на портале.
@@ -39,6 +42,7 @@ void setup() {
   delay(1000);
 
   sensorBegin();
+  wifiDiagnosticsBegin();
   portalBegin();
   startTimeSync();
   mqttBegin();
@@ -58,6 +62,7 @@ void loop() {
   // Полностью неблокирующими эти две функции всё же не сделать — попытка
   // подключения к брокеру и рукопожатие TLS блокируют по своей природе.
   portalLoop();
+  wifiDiagnosticsLoop();
 
   if (portalConsumeSettingsChanged()) {
     // Настройки изменили с портала — переподключаемся с новыми параметрами.

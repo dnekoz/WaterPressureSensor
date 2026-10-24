@@ -34,4 +34,9 @@ jobs:
         run: pio test -e native
 
       - name: Build firmware
-        run: pio run -e d1_mini
+        run: pio run -e d1_mini -e d1_mini_diag
+
+      - name: Verify NON-OS SDK archives and firmware
+        run: |
+          python scripts/verify_nonos_sdk.py
+          python scripts/verify_nonos_sdk.py --environment d1_mini_diag

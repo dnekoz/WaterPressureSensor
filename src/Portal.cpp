@@ -16,6 +16,7 @@
 #include "Sensor.h"
 #include "Settings.h"
 #include "WebAssets.h"
+#include "WifiDiagnostics.h"
 
 static ESP8266WebServer server(80);
 static DNSServer dns;
@@ -165,6 +166,8 @@ static void handleStatus() {
   doc["name"] = settings.deviceName;
   doc["id"] = deviceId();
   doc["version"] = FW_VERSION;
+  doc["sdk"] = ESP.getSdkVersion();
+  doc["sdk_release"] = WPS_NONOS_SDK_RELEASE;
   doc["uptime_s"] = millis() / 1000;
   doc["max_bar"] = sensorMaxBar();
   doc["heap_block"] = ESP.getMaxFreeBlockSize();
@@ -185,8 +188,30 @@ static void handleStatus() {
   doc["ca"]["error"] = caLastError();
   doc["tls_error"] = mqttTlsError();
   doc["storage_error"] = settingsLastError();
+#if defined(WPS_WIFI_DIAGNOSTICS)
+  doc["wifi_diagnostics"]["enabled"] = wifiDiagnosticsEnabled();
+  doc["wifi_diagnostics"]["error"] = wifiDiagnosticsError();
+#endif
   jsonReply(200, doc);
 }
+
+#if defined(WPS_WIFI_DIAGNOSTICS)
+static void handleWifiDiagnostics() {
+  if (!authorize()) return;
+  File previous = LittleFS.open(wifiDiagnosticsPreviousLogPath(), "r");
+  File current = LittleFS.open(wifiDiagnosticsLogPath(), "r");
+  if (!previous && !current) {
+    reply(503, "Журнал диагностики Wi-Fi пока недоступен.", true);
+    return;
+  }
+  noCache();
+  server.sendHeader("Content-Disposition", "attachment; filename=wifi-diagnostics.ndjson");
+  server.setContentLength((previous ? previous.size() : 0) + (current ? current.size() : 0));
+  server.send(200, "application/x-ndjson; charset=utf-8", "");
+  if (previous) server.sendContent(previous, previous.size());
+  if (current) server.sendContent(current, current.size());
+}
+#endif
 
 static void handleGetSettings() {
   if (!authorize()) return;
@@ -391,6 +416,9 @@ void portalBegin() {
   server.on("/app.js", HTTP_GET, [] { serveAsset(WEB_JS, sizeof(WEB_JS), "application/javascript; charset=utf-8", WEB_JS_ETAG); });
   server.on("/reading", HTTP_GET, handleReading);
   server.on("/api/status", HTTP_GET, handleStatus);
+#if defined(WPS_WIFI_DIAGNOSTICS)
+  server.on("/api/diagnostics/wifi", HTTP_GET, handleWifiDiagnostics);
+#endif
   server.on("/api/login", HTTP_POST, handleLogin);
   server.on("/api/login/display", HTTP_POST, handleLoginDisplay);
   server.on("/api/logout", HTTP_POST, handleLogout);
@@ -458,12 +486,17 @@ void portalLoop() {
     if (!s_apOffered && uint32_t(now - s_disconnectedMs) >= 15000) startAp();
     if (WiFi.SSID().length() && uint32_t(now - s_retryMs) >= 30000) {
       s_retryMs = now;
-      WiFi.reconnect();
+      wifiDiagnosticsBeforeRetry();
+      const bool started = WiFi.reconnect();
+      wifiDiagnosticsRetry(started);
     }
   }
+  // startAp() above can yield while switching radio modes. Use a fresh clock:
+  // the earlier `now` can precede s_apStartedMs and underflow the unsigned age.
+  const uint32_t apNow = millis();
   if (s_apActive && WiFi.softAPgetStationNum() == 0 &&
-      ((connected && uint32_t(now - s_apStartedMs) > 10000) ||
-       (WiFi.SSID().length() && uint32_t(now - s_apStartedMs) > PORTAL_TIMEOUT_S * 1000UL))) {
+      ((connected && uint32_t(apNow - s_apStartedMs) > 10000) ||
+       (WiFi.SSID().length() && uint32_t(apNow - s_apStartedMs) > PORTAL_TIMEOUT_S * 1000UL))) {
     dns.stop();
     WiFi.softAPdisconnect(true);
     WiFi.mode(WIFI_STA);
