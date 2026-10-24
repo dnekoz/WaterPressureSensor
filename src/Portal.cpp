@@ -20,13 +20,13 @@
 
 static ESP8266WebServer server(80);
 static DNSServer dns;
+static WifiConnection s_wifi;
 static char s_apName[32];
 static bool s_apActive = false;
 static bool s_apOffered = false;
 static bool s_settingsChanged = false;
 static uint32_t s_disconnectedMs = 0;
 static uint32_t s_apStartedMs = 0;
-static uint32_t s_retryMs = 0;
 static uint32_t s_restartMs = 0;
 static bool s_restartPending = false;
 static bool s_wifiPending = false;
@@ -173,7 +173,7 @@ static void handleStatus() {
   doc["heap_block"] = ESP.getMaxFreeBlockSize();
   doc["authenticated"] = authenticated();
   doc["wifi"]["connected"] = WiFi.status() == WL_CONNECTED;
-  doc["wifi"]["ssid"] = WiFi.SSID();
+  doc["wifi"]["ssid"] = s_wifi.ssid();
   doc["wifi"]["ip"] = WiFi.localIP().toString();
   doc["wifi"]["ap"] = s_apActive;
   doc["wifi"]["ap_name"] = s_apName;
@@ -221,7 +221,7 @@ static void handleGetSettings() {
   doc.remove("portalPass");
   doc.remove("haPrefixApplied");
   doc["mqttPasswordSet"] = settings.mqttPass[0] != '\0';
-  doc["wifiSsid"] = WiFi.SSID();
+  doc["wifiSsid"] = s_wifi.ssid();
   jsonReply(200, doc);
 }
 
@@ -251,11 +251,9 @@ static void handleWifi() {
   }
   const char *ssid = doc["ssid"] | "";
   const char *pass = doc["password"] | "";
-  String savedPass;
   if (doc["keepPassword"] == true) {
-    if (WiFi.SSID() != ssid) { reply(400, "Для новой сети укажите пароль.", true); return; }
-    savedPass = WiFi.psk();
-    pass = savedPass.c_str();
+    if (strcmp(s_wifi.ssid(), ssid)) { reply(400, "Для новой сети укажите пароль.", true); return; }
+    pass = s_wifi.password();
   }
   if (!strlen(ssid) || strlen(ssid) > 32 || strlen(pass) > 63 || (strlen(pass) > 0 && strlen(pass) < 8)) {
     reply(400, "Имя сети: 1–32 байта. Пароль: 8–63 символа или пустой для открытой сети.", true); return;
@@ -302,6 +300,19 @@ static void startAp() {
     Serial.printf("[wifi] AP %s, http://%s/\n", s_apName, WiFi.softAPIP().toString().c_str());
   } else {
     Serial.println(F("[WIFI][ERROR] Не удалось открыть точку доступа. Проверьте пароль (8–63 символа) и свободную память."));
+  }
+}
+
+static void startNetworkServices(const char *hostname) {
+  // При смене/потере интерфейса сетевые слушатели могут закрыться. Поднимаем
+  // их заново и после получения нового IP, не полагаясь на старые сокеты.
+  server.begin();
+  MDNS.end();
+  if (MDNS.begin(hostname)) MDNS.addService("http", "tcp", 80);
+  else Serial.println(F("[WIFI][ERROR] mDNS не запущен. Используйте IP устройства."));
+  if (s_apActive) {
+    dns.stop();
+    dns.start(53, "*", WiFi.softAPIP());
   }
 }
 
@@ -402,14 +413,12 @@ void portalBegin() {
   Serial.printf("[portal] пароль интерфейса и точки доступа: %s\n", settings.portalPass);
   WiFi.persistent(false);
   WiFi.mode(WIFI_STA);
-  WiFi.setAutoReconnect(true);
   char hostname[32];
   snprintf(hostname, sizeof(hostname), "wps-%06x", ESP.getChipId());
   WiFi.hostname(hostname);
-  if (WiFi.SSID().length()) WiFi.begin();
-  else startAp();
+  s_wifi.begin(millis());
+  if (!s_wifi.configured()) startAp();
   s_disconnectedMs = millis();
-  s_retryMs = millis();
   server.collectHeaders("Cookie", "X-WPS-Request", "If-None-Match");
   server.on("/", HTTP_GET, [] { serveAsset(WEB_INDEX, sizeof(WEB_INDEX), "text/html; charset=utf-8", WEB_INDEX_ETAG, true); });
   server.on("/app.css", HTTP_GET, [] { serveAsset(WEB_CSS, sizeof(WEB_CSS), "text/css; charset=utf-8", WEB_CSS_ETAG); });
@@ -452,9 +461,7 @@ void portalBegin() {
     noCache();
     server.send(302, "text/plain", "");
   });
-  server.begin();
-  MDNS.begin(hostname);
-  MDNS.addService("http", "tcp", 80);
+  startNetworkServices(hostname);
 }
 
 void portalLoop() {
@@ -466,17 +473,20 @@ void portalLoop() {
   if (s_wifiPending && uint32_t(now - s_wifiApplyMs) > 300) {
     s_wifiPending = false;
     startAp();
-    WiFi.persistent(true);
-    WiFi.begin(s_wifiSsid, s_wifiPass);
-    WiFi.persistent(false);
+    s_wifi.connect(s_wifiSsid, s_wifiPass, now);
     memset(s_wifiPass, 0, sizeof(s_wifiPass));
     s_disconnectedMs = now;
   }
+  s_wifi.loop(now);
   bool connected = WiFi.status() == WL_CONNECTED;
   static bool wasConnected = false;
   if (connected != wasConnected) {
-    if (connected) Serial.printf("[WIFI][OK] Сеть: %s. Интерфейс: http://%s/\n", WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
-    else Serial.println(F("[WIFI][LOST] Связь с роутером потеряна. Пробую подключиться снова."));
+    if (connected) {
+      char hostname[32];
+      snprintf(hostname, sizeof(hostname), "wps-%06x", ESP.getChipId());
+      startNetworkServices(hostname);
+      Serial.printf("[WIFI][OK] Сеть: %s. Интерфейс: http://%s/\n", s_wifi.ssid(), WiFi.localIP().toString().c_str());
+    } else Serial.println(F("[WIFI][LOST] Связь с роутером потеряна. Пробую подключиться снова."));
     wasConnected = connected;
   }
   if (connected) {

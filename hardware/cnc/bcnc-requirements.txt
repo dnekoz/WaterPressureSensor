@@ -1,0 +1,5 @@
+# Tested isolated Windows environment: Python 3.11 / Tcl-Tk 8.6.
+# bCNC 0.9.16 requires the older OpenCV 4.5.5 wheel, built with NumPy 1.x.
+bCNC==0.9.16
+numpy==1.26.4
+opencv-python==4.5.5.64

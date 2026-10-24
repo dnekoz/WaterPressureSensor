@@ -1,0 +1,16 @@
+{
+  "python": "3.11.9",
+  "bCNC": "0.9.16",
+  "numpy": "1.26.4",
+  "opencv": "4.5.5",
+  "opencv_numpy_operation": "PASS",
+  "tcl": "8.6.12",
+  "legacy_tk_trace": "PASS",
+  "tk": "8.6.12",
+  "application_widgets": "PASS",
+  "loaded_air_job": "01_contacts_D1mm_SETUP_REQUIRED_AIR5.ngc",
+  "loaded_blocks": 2,
+  "synthetic_probe_interpolation": "PASS",
+  "hardware_connected": false,
+  "status": "PASS_OFFLINE_STARTUP"
+}

@@ -1,0 +1,877 @@
+(kicad_sch (version 20250610) (generator "eeschema") (generator_version "10.0") (uuid "fd62394a-3fd6-5787-9969-858093cb4dc1") (paper "A4")
+(title_block (title "WaterPressureSensor - module carrier") (date "2026-10-17") (rev "A3 REVIEW") (comment 1 "Electrical connections defined; mechanical verification pending"))
+(lib_symbols
+(symbol "WaterPressureSensor:WEMOS_D1_mini"
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(duplicate_pin_numbers_are_jumpers no)
+		(property "Reference" "U"
+			(at 3.81 19.05 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "WEMOS_D1_mini"
+			(at 1.27 -19.05 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 0 -29.21 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://wiki.wemos.cc/products:d1:d1_mini#documentation"
+			(at -46.99 -29.21 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "32-bit microcontroller module with WiFi"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_keywords" "ESP8266 WiFi microcontroller ESP8266EX"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_fp_filters" "WEMOS*D1*mini*"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(symbol "WEMOS_D1_mini_1_1"
+			(rectangle
+				(start -7.62 17.78)
+				(end 7.62 -17.78)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type background)
+				)
+			)
+			(pin input line
+				(at -10.16 10.16 0)
+				(length 2.54)
+				(name "~{RST}"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at 10.16 12.7 180)
+				(length 2.54)
+				(name "A0"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin bidirectional line
+				(at 10.16 10.16 180)
+				(length 2.54)
+				(name "D0"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "3"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin bidirectional line
+				(at 10.16 -2.54 180)
+				(length 2.54)
+				(name "SCK/D5"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "4"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin bidirectional line
+				(at 10.16 -5.08 180)
+				(length 2.54)
+				(name "MISO/D6"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "5"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin bidirectional line
+				(at 10.16 -7.62 180)
+				(length 2.54)
+				(name "MOSI/D7"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "6"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin bidirectional line
+				(at 10.16 -10.16 180)
+				(length 2.54)
+				(name "CS/D8"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "7"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin power_out line
+				(at 2.54 20.32 270)
+				(length 2.54)
+				(name "3V3"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "8"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin power_in line
+				(at -2.54 20.32 270)
+				(length 2.54)
+				(name "5V"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "9"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin power_in line
+				(at 0 -20.32 90)
+				(length 2.54)
+				(name "GND"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "10"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin bidirectional line
+				(at 10.16 0 180)
+				(length 2.54)
+				(name "D4"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "11"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin bidirectional line
+				(at 10.16 2.54 180)
+				(length 2.54)
+				(name "D3"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "12"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin bidirectional line
+				(at 10.16 5.08 180)
+				(length 2.54)
+				(name "SDA/D2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "13"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin bidirectional line
+				(at 10.16 7.62 180)
+				(length 2.54)
+				(name "SCL/D1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "14"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin input line
+				(at -10.16 2.54 0)
+				(length 2.54)
+				(name "RX"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "15"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin output line
+				(at -10.16 0 0)
+				(length 2.54)
+				(name "TX"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "16"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+		)
+		(embedded_fonts no)
+	)
+(symbol "WaterPressureSensor:OLED_SSD1306_I2C" (pin_names (offset 1.016))
+(exclude_from_sim no) (in_bom yes) (on_board yes)
+(property "Reference" "J" (at 0 12.7 0) (effects (font (size 1.27 1.27))))
+(property "Value" "SSD1306 0.96in I2C" (at 0 -12.7 0) (effects (font (size 1.27 1.27))))
+(property "Footprint" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(property "Datasheet" "" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(property "Description" "Module connector; footprint pending mechanical verification" (at 0 0 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(symbol "OLED_SSD1306_I2C_0_1" (rectangle (start -12.7 10.16) (end 12.7 -10.16) (stroke (width 0.254) (type default)) (fill (type background))))
+(symbol "OLED_SSD1306_I2C_1_1"
+(pin power_in line (at -17.78 7.62 0) (length 5.08) (name "GND" (effects (font (size 1.016 1.016)))) (number "1" (effects (font (size 1.016 1.016)))))
+(pin power_in line (at -17.78 2.54 0) (length 5.08) (name "VCC" (effects (font (size 1.016 1.016)))) (number "2" (effects (font (size 1.016 1.016)))))
+(pin input line (at -17.78 -2.54 0) (length 5.08) (name "SCL" (effects (font (size 1.016 1.016)))) (number "3" (effects (font (size 1.016 1.016)))))
+(pin bidirectional line (at -17.78 -7.62 0) (length 5.08) (name "SDA" (effects (font (size 1.016 1.016)))) (number "4" (effects (font (size 1.016 1.016)))))
+))
+(symbol "WaterPressureSensor:4P4C"
+		(pin_names
+			(offset 1.016)
+		)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(duplicate_pin_numbers_are_jumpers no)
+		(property "Reference" "J"
+			(at -5.08 8.89 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "4P4C"
+			(at 2.54 8.89 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 0 1.27 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 1.27 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "RJ connector, 4P4C (4 positions 4 connected), RJ9/RJ10/RJ22"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_keywords" "4P4C RJ socket connector"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_fp_filters" "4P4C* RJ9* RJ10* RJ22*"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(symbol "4P4C_0_1"
+			(polyline
+				(pts
+					(xy -6.35 3.175) (xy -5.08 3.175) (xy -5.08 3.175)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -6.35 1.905) (xy -5.08 1.905) (xy -5.08 1.905)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -6.35 0.635) (xy -5.08 0.635) (xy -5.08 0.635)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -6.35 -0.635) (xy -5.08 -0.635) (xy -5.08 -0.635)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -6.35 -3.175) (xy -6.35 5.715) (xy -1.27 5.715) (xy 3.81 5.715) (xy 3.81 4.445) (xy 5.08 4.445)
+					(xy 5.08 3.175) (xy 6.35 3.175) (xy 6.35 -0.635) (xy 5.08 -0.635) (xy 5.08 -1.905) (xy 3.81 -1.905)
+					(xy 3.81 -3.175) (xy -6.35 -3.175) (xy -6.35 -3.175)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(rectangle
+				(start 7.62 7.62)
+				(end -7.62 -5.08)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type background)
+				)
+			)
+		)
+		(symbol "4P4C_1_1"
+			(pin passive line
+				(at 10.16 -2.54 180)
+				(length 2.54)
+				(name ""
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at 10.16 0 180)
+				(length 2.54)
+				(name ""
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at 10.16 2.54 180)
+				(length 2.54)
+				(name ""
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "3"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at 10.16 5.08 180)
+				(length 2.54)
+				(name ""
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "4"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+		)
+		(embedded_fonts no)
+	)
+(symbol "WaterPressureSensor:PWR_FLAG"
+		(power global)
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(offset 0)
+			(hide yes)
+		)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(duplicate_pin_numbers_are_jumpers no)
+		(property "Reference" "#FLG"
+			(at 0 1.905 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 0 3.81 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_keywords" "flag power"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(symbol "PWR_FLAG_0_0"
+			(pin power_out line
+				(at 0 0 90)
+				(length 0)
+				(name ""
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+		)
+		(symbol "PWR_FLAG_0_1"
+			(polyline
+				(pts
+					(xy 0 0) (xy 0 1.27) (xy -1.016 1.905) (xy 0 2.54) (xy 1.016 1.905) (xy 0 1.27)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+		)
+		(embedded_fonts no)
+	)
+)
+(text "WaterPressureSensor / Single-sided module carrier" (at 20.32 17.78 0) (effects (font (size 2.0 2.0)) (justify left top)) (uuid "ebd8108f-0443-5e60-bef5-24adbe4a5333"))
+(text "A3: SINGLE-SIDED PCB REVIEW - VERIFY MECHANICS BEFORE FABRICATION" (at 20.32 25.4 0) (effects (font (size 1.5 1.5)) (justify left top)) (uuid "a2e1c875-fece-58e7-b119-68182bbfa839"))
+(text "USB on U1 is the only power input. Direct sensor signal to A0." (at 20.32 33.02 0) (effects (font (size 1.27 1.27)) (justify left top)) (uuid "921313f8-c6e6-58f2-a3b3-9a7d13549462"))
+(symbol (lib_id "WaterPressureSensor:WEMOS_D1_mini") (at 73.66 83.82 0) (unit 1)
+(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+(uuid "0bc79d98-5b27-5562-b53e-5d3920f8fb6a")
+(property "Reference" "U1" (at 73.66 60.82 0) (effects (font (size 1.27 1.27))))
+(property "Value" "WeMos D1 Mini" (at 73.66 106.82 0) (effects (font (size 1.27 1.27))))
+(property "Footprint" "WaterPressureSensor:WEMOS_D1_mini_TypeC_headers" (at 73.66 83.82 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(property "Datasheet" "" (at 73.66 83.82 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(property "Description" "" (at 73.66 83.82 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(pin "1" (uuid "c4db2628-28fb-5847-9c07-9bc9f5be345d"))
+(pin "2" (uuid "3a513ba1-2d53-56e8-85eb-c5a85e17defc"))
+(pin "3" (uuid "05ea1b55-7136-50b5-a2fe-9affbf0023e7"))
+(pin "4" (uuid "7144a30a-278e-5598-ba8a-022d9a6ae89a"))
+(pin "5" (uuid "be4de763-a2b8-5dfd-8310-265fd74de243"))
+(pin "6" (uuid "aa484ed9-1aec-59a3-b42f-c17cfb97ca15"))
+(pin "7" (uuid "ea276ba8-3fa7-5255-b703-0ca8f83f63b5"))
+(pin "8" (uuid "d484cca6-8c56-50f0-aa15-c63b14b55c7e"))
+(pin "9" (uuid "1899c074-4c3d-5f03-a1e0-f2946fdf2659"))
+(pin "10" (uuid "12e481b8-c53d-5c5f-a5de-95e0274a9dd9"))
+(pin "11" (uuid "ab6ab6bb-22eb-535e-b83c-d085968a4dc3"))
+(pin "12" (uuid "de5ac91f-6c1c-5e1c-ab01-ac1dc11da2b7"))
+(pin "13" (uuid "68a99460-05d7-58e4-b860-a485dd818de5"))
+(pin "14" (uuid "04e8e3b4-7cff-54be-b822-83aad02023c8"))
+(pin "15" (uuid "9b60bd9f-c0ee-53ec-8049-ab0f534b98dc"))
+(pin "16" (uuid "88d1d1f1-b710-5ff5-8467-14a412559da7"))
+(instances (project "WaterPressureSensor" (path "/fd62394a-3fd6-5787-9969-858093cb4dc1" (reference "U1") (unit 1)))))
+(symbol (lib_id "WaterPressureSensor:OLED_SSD1306_I2C") (at 163.83 77.47 0) (unit 1)
+(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+(uuid "9afb9fcd-f988-59a0-9ad7-48d3ce897f98")
+(property "Reference" "J1" (at 163.83 63.47 0) (effects (font (size 1.27 1.27))))
+(property "Value" "SSD1306 / tall 1x4 socket" (at 163.83 91.47 0) (effects (font (size 1.27 1.27))))
+(property "Footprint" "WaterPressureSensor:OLED_ESW_1x04_P2.54_H18.67" (at 163.83 77.47 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(property "Datasheet" "" (at 163.83 77.47 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(property "Description" "" (at 163.83 77.47 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(pin "1" (uuid "047dc204-83df-55e7-aeeb-586ca8dc1591"))
+(pin "2" (uuid "0c450bdf-3fd2-5d3a-81f4-05fa9852c089"))
+(pin "3" (uuid "89c3edf8-8d6b-5379-ae58-260d269c6ed1"))
+(pin "4" (uuid "678c5577-e25c-5490-9263-b25d1fe515e9"))
+(instances (project "WaterPressureSensor" (path "/fd62394a-3fd6-5787-9969-858093cb4dc1" (reference "J1") (unit 1)))))
+(symbol (lib_id "WaterPressureSensor:4P4C") (at 246.38 85.09 0) (unit 1)
+(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+(uuid "ca460330-9fe7-562c-b3f5-5b57029ee99d")
+(property "Reference" "J2" (at 246.38 71.09 0) (effects (font (size 1.27 1.27))))
+(property "Value" "RJ-10 / 4P4C PCB jack" (at 246.38 99.09 0) (effects (font (size 1.27 1.27))))
+(property "Footprint" "WaterPressureSensor:RJ10_Evercom_5301_4P4C" (at 246.38 85.09 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(property "Datasheet" "" (at 246.38 85.09 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(property "Description" "" (at 246.38 85.09 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(pin "1" (uuid "b478b16f-7432-5d95-95d1-4933dae5aeb6"))
+(pin "2" (uuid "01a75136-a96a-5d32-8269-ce09ac302d5b"))
+(pin "3" (uuid "7f064123-984a-5b03-a9ed-74bdcd79e3d2"))
+(pin "4" (uuid "90980c17-738f-55e7-a192-2c052460148b"))
+(instances (project "WaterPressureSensor" (path "/fd62394a-3fd6-5787-9969-858093cb4dc1" (reference "J2") (unit 1)))))
+(wire (pts (xy 83.82 71.12) (xy 111.76 71.12)) (stroke (width 0) (type default)) (uuid "c267b80f-ef44-5942-9560-3eb53c7dba24"))
+(label "SENSOR_SIG" (at 111.76 71.12 0) (effects (font (size 1.016 1.016)) (justify left bottom)) (uuid "82d6fc59-889f-51b7-9067-4d88a6275c28"))
+(wire (pts (xy 76.2 63.5) (xy 76.2 50.8)) (stroke (width 0) (type default)) (uuid "1d33ed71-f900-53d1-8915-3febdb9c74ae"))
+(label "+3V3" (at 76.2 50.8 0) (effects (font (size 1.016 1.016)) (justify left bottom)) (uuid "4651cb6f-7f73-507f-8763-3f0506801025"))
+(wire (pts (xy 71.12 63.5) (xy 71.12 55.88)) (stroke (width 0) (type default)) (uuid "fb27ed59-01ad-543f-8125-398b802529b8"))
+(label "+5V_USB" (at 71.12 55.88 0) (effects (font (size 1.016 1.016)) (justify left bottom)) (uuid "ea122dc1-5b28-56ac-9883-38580c09e1ee"))
+(wire (pts (xy 73.66 104.14) (xy 73.66 116.84)) (stroke (width 0) (type default)) (uuid "edf782b9-2eb8-559c-aa79-ea23669f4f40"))
+(label "GND" (at 73.66 116.84 0) (effects (font (size 1.016 1.016)) (justify left bottom)) (uuid "cb6df01b-cc34-5ec4-a625-b52fbb1a8505"))
+(wire (pts (xy 83.82 78.74) (xy 111.76 78.74)) (stroke (width 0) (type default)) (uuid "56c3fb75-e6e5-59f9-8973-1eafd5ea8465"))
+(label "I2C_SDA" (at 111.76 78.74 0) (effects (font (size 1.016 1.016)) (justify left bottom)) (uuid "a73f10b7-0ccc-50ab-bdef-c89b01861214"))
+(wire (pts (xy 83.82 76.2) (xy 111.76 76.2)) (stroke (width 0) (type default)) (uuid "a01148bc-3a62-527e-9a6c-af8fa8a2ef02"))
+(label "I2C_SCL" (at 111.76 76.2 0) (effects (font (size 1.016 1.016)) (justify left bottom)) (uuid "cfdb0efc-325a-500d-b7d8-f6eddacf955e"))
+(no_connect (at 63.5 73.66) (uuid "74d6cf4e-52b7-552c-9bb7-b442368d913d"))
+(no_connect (at 83.82 73.66) (uuid "a9af5a0c-761b-5805-b887-793ed9b87302"))
+(no_connect (at 83.82 86.36) (uuid "918547b8-3292-5f27-a923-2269b4a41a3b"))
+(no_connect (at 83.82 88.9) (uuid "a222acfc-0a5c-56f8-b01d-cc62a374e02c"))
+(no_connect (at 83.82 91.44) (uuid "00eace0b-8013-56bf-af92-17321b8b17dd"))
+(no_connect (at 83.82 93.98) (uuid "2dcf65b0-5dc6-5d17-8ee6-28b25d641694"))
+(no_connect (at 83.82 83.82) (uuid "a8119755-561c-59b0-908a-cd205d34e61d"))
+(no_connect (at 83.82 81.28) (uuid "08978563-71df-5e80-aee1-1a5fb0692453"))
+(no_connect (at 63.5 81.28) (uuid "37378a77-4086-5301-8ea2-650e11847462"))
+(no_connect (at 63.5 83.82) (uuid "2fa2b46d-a4ef-5afc-9f64-5650a6fcee61"))
+(wire (pts (xy 256.54 87.63) (xy 269.24 87.63)) (stroke (width 0) (type default)) (uuid "0728bb13-6642-5c01-893a-c9735acf26d6"))
+(label "+5V_USB" (at 269.24 87.63 0) (effects (font (size 1.016 1.016)) (justify left bottom)) (uuid "3db0810a-519b-5760-bc81-8779b0cd087b"))
+(wire (pts (xy 256.54 85.09) (xy 269.24 85.09)) (stroke (width 0) (type default)) (uuid "3fa1c321-c971-5f2a-8e3f-b7ce325c689c"))
+(label "GND" (at 269.24 85.09 0) (effects (font (size 1.016 1.016)) (justify left bottom)) (uuid "662b77a4-bf27-5c5f-88fb-e1516f65343e"))
+(wire (pts (xy 256.54 80.01) (xy 269.24 80.01)) (stroke (width 0) (type default)) (uuid "7ec6c5f9-8fab-5d48-be78-8f3a5442b911"))
+(label "SENSOR_SIG" (at 269.24 80.01 0) (effects (font (size 1.016 1.016)) (justify left bottom)) (uuid "07b32516-b2e5-50cb-8696-fe6a8a306d9c"))
+(no_connect (at 256.54 82.55) (uuid "3d8b03b0-9eca-5a69-8e00-4864b1ef1466"))
+(wire (pts (xy 130.81 69.85) (xy 146.05 69.85)) (stroke (width 0) (type default)) (uuid "8bca6d08-21af-5b56-8146-5c3d8f5b5dfc"))
+(label "GND" (at 130.81 69.85 0) (effects (font (size 1.016 1.016)) (justify left bottom)) (uuid "6098964f-ab91-51c0-97f5-3345733646f9"))
+(wire (pts (xy 130.81 74.93) (xy 146.05 74.93)) (stroke (width 0) (type default)) (uuid "c35e19e6-716e-59b9-ad56-bc435ad15de4"))
+(label "+3V3" (at 130.81 74.93 0) (effects (font (size 1.016 1.016)) (justify left bottom)) (uuid "6bc8bfa2-a361-5c83-b7f1-1f8ca58aa6cf"))
+(wire (pts (xy 130.81 80.01) (xy 146.05 80.01)) (stroke (width 0) (type default)) (uuid "6d1ae63f-c484-50b9-b5df-2ffd754f71ed"))
+(label "I2C_SCL" (at 130.81 80.01 0) (effects (font (size 1.016 1.016)) (justify left bottom)) (uuid "7120233f-9bfd-514d-a87a-4accd242cb6f"))
+(wire (pts (xy 130.81 85.09) (xy 146.05 85.09)) (stroke (width 0) (type default)) (uuid "decf4850-4a30-50e0-aea1-17cfc3b23c71"))
+(label "I2C_SDA" (at 130.81 85.09 0) (effects (font (size 1.016 1.016)) (justify left bottom)) (uuid "b9d63bcd-3eda-5e91-af55-10da1fb67c15"))
+(symbol (lib_id "WaterPressureSensor:PWR_FLAG") (at 38.1 128.27 0) (unit 1)
+(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+(uuid "8e50c966-b6fe-57c7-af86-9f3eb8be3252")
+(property "Reference" "#FLG01" (at 38.1 114.27 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(property "Value" "PWR_FLAG" (at 38.1 142.27 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(property "Footprint" "" (at 38.1 128.27 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(property "Datasheet" "" (at 38.1 128.27 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(property "Description" "" (at 38.1 128.27 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(pin "1" (uuid "4cfc43da-a604-5c4f-bfd2-d1d0bd087f56"))
+(instances (project "WaterPressureSensor" (path "/fd62394a-3fd6-5787-9969-858093cb4dc1" (reference "#FLG01") (unit 1)))))
+(wire (pts (xy 38.1 128.27) (xy 38.1 133.35)) (stroke (width 0) (type default)) (uuid "743310c1-0013-5c00-a03f-068c53addc86"))
+(label "+5V_USB" (at 38.1 133.35 0) (effects (font (size 1.016 1.016)) (justify left bottom)) (uuid "7cba0422-fbf8-5e03-b597-702de848362e"))
+(symbol (lib_id "WaterPressureSensor:PWR_FLAG") (at 55.88 128.27 0) (unit 1)
+(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+(uuid "911748fb-302d-57f2-9290-7fe0316bfdb1")
+(property "Reference" "#FLG02" (at 55.88 114.27 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(property "Value" "PWR_FLAG" (at 55.88 142.27 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(property "Footprint" "" (at 55.88 128.27 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(property "Datasheet" "" (at 55.88 128.27 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(property "Description" "" (at 55.88 128.27 0) (effects (font (size 1.27 1.27)) (hide yes)))
+(pin "1" (uuid "8b620a71-eecd-53c7-ab68-02387f6a5cb4"))
+(instances (project "WaterPressureSensor" (path "/fd62394a-3fd6-5787-9969-858093cb4dc1" (reference "#FLG02") (unit 1)))))
+(wire (pts (xy 55.88 128.27) (xy 55.88 133.35)) (stroke (width 0) (type default)) (uuid "39a5293c-8afc-530c-bb5a-294d6bb05b9a"))
+(label "GND" (at 55.88 133.35 0) (effects (font (size 1.016 1.016)) (justify left bottom)) (uuid "d772b500-05cd-57a9-9420-b0621205158f"))
+(text "USB power source in U1" (at 25.4 140.97 0) (effects (font (size 1.016 1.016)) (justify left top)) (uuid "2c52cac0-424d-5738-beb4-b36de9a80e9c"))
+(text "OLED: second tier OVER WeMos; tall 1x4 socket\nFront view, left to right: 1 GND, 2 VCC, 3 SCL, 4 SDA\nVCC = 3.3V from U1; reference envelope 27 x 27 x 3.5mm" (at 129.54 105.41 0) (effects (font (size 1.016 1.016)) (justify left top)) (uuid "a0a5edd4-495c-53e2-8021-089215d88664"))
+(text "J2: RJ-10 / 4P4C PCB-mounted socket\n1: +5V_USB   2: GND   4: SENSOR_SIG to U1.A0\n3: reserved / unused on carrier" (at 203.2 110.49 0) (effects (font (size 1.016 1.016)) (justify left top)) (uuid "29b0c7c2-5640-5afc-b036-f4b49ca5187e"))
+(text "MECHANICAL CHECKS BEFORE FABRICATION\n1. Type-C WeMos header fit and OLED header pitch/offset\n2. Actual RJ-10 jack versus selected EVERCOM family\n3. Elevated socket mating height and RF clearance" (at 20.32 154.94 0) (effects (font (size 1.016 1.016)) (justify left top)) (uuid "183dd363-acce-5fa6-bb45-cfaaa0f11fde"))
+(text "PCB intent: B.Cu only; through-hole assembly\nNo external analog conditioning, per user requirement\nRJ-10 pin 3 and unused MCU pins are NC; no ERC exclusions" (at 157.48 151.13 0) (effects (font (size 1.016 1.016)) (justify left top)) (uuid "b2c24d38-a577-526f-8774-3bcf025bc16d"))
+(sheet_instances (path "/" (page "1"))) (embedded_fonts no))

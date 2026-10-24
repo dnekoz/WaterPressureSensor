@@ -1,0 +1,266 @@
+{
+  "source_unchanged": true,
+  "input_format": "mm / Gerber 4.6 / Excellon decimal",
+  "nominal_resist_sweep_preserves_copper": true,
+  "resist_segments_checked": 2227,
+  "checks": {
+    "jobs/01_contacts_D1mm_SETUP_REQUIRED.ngc": {
+      "status": "PASS_STATIC_SUBSET",
+      "bounds_center_mm": {
+        "X": [
+          0,
+          27.28
+        ],
+        "Y": [
+          0,
+          45.0
+        ],
+        "Z": [
+          -2.5,
+          5
+        ]
+      },
+      "max_depth_below_nominal_zero_mm": 2.5,
+      "tools": [
+        1
+      ],
+      "pauses": 1,
+      "moves": 458,
+      "tool_radius_mm": 0.5,
+      "note": "Work coordinates only; fixture, offsets, height map and cutting unverified"
+    },
+    "jobs/02_PILOTS_ONLY_D2mm_SETUP_REQUIRED.ngc": {
+      "status": "PASS_STATIC_SUBSET",
+      "bounds_center_mm": {
+        "X": [
+          0,
+          32.5
+        ],
+        "Y": [
+          0,
+          56.5
+        ],
+        "Z": [
+          -2.85,
+          5
+        ]
+      },
+      "max_depth_below_nominal_zero_mm": 2.85,
+      "tools": [
+        2
+      ],
+      "pauses": 1,
+      "moves": 140,
+      "tool_radius_mm": 1.0,
+      "note": "Work coordinates only; fixture, offsets, height map and cutting unverified"
+    },
+    "jobs/03_EXPERIMENT_resist_clear_UNLEVELLED.ngc": {
+      "status": "PASS_STATIC_SUBSET",
+      "bounds_center_mm": {
+        "X": [
+          -0.11,
+          36.11
+        ],
+        "Y": [
+          -0.1,
+          60.1
+        ],
+        "Z": [
+          -0.005,
+          5
+        ]
+      },
+      "max_depth_below_nominal_zero_mm": 0.005,
+      "tools": [
+        4
+      ],
+      "pauses": 1,
+      "moves": 8910,
+      "tool_radius_mm": 0.10133974596215561,
+      "note": "Work coordinates only; fixture, offsets, height map and cutting unverified"
+    },
+    "jobs/04_outline_REQUIRES_ENDMILL_1mm.ngc": {
+      "status": "PASS_STATIC_SUBSET",
+      "bounds_center_mm": {
+        "X": [
+          -0.5,
+          36.5
+        ],
+        "Y": [
+          -0.5,
+          60.5
+        ],
+        "Z": [
+          -2.2,
+          5
+        ]
+      },
+      "max_depth_below_nominal_zero_mm": 2.2,
+      "tools": [
+        3
+      ],
+      "pauses": 1,
+      "moves": 178,
+      "tool_radius_mm": 0.5,
+      "note": "Work coordinates only; fixture, offsets, height map and cutting unverified"
+    },
+    "jobs/05_largeholes_REQUIRES_ENDMILL_1mm.ngc": {
+      "status": "PASS_STATIC_SUBSET",
+      "bounds_center_mm": {
+        "X": [
+          0,
+          33.6
+        ],
+        "Y": [
+          0,
+          57.6
+        ],
+        "Z": [
+          -2.2,
+          5
+        ]
+      },
+      "max_depth_below_nominal_zero_mm": 2.2,
+      "tools": [
+        3
+      ],
+      "pauses": 1,
+      "moves": 284,
+      "tool_radius_mm": 0.5,
+      "note": "Work coordinates only; fixture, offsets, height map and cutting unverified"
+    },
+    "dryrun/01_contacts_D1mm_SETUP_REQUIRED_AIR5.ngc": {
+      "status": "PASS_STATIC_SUBSET",
+      "bounds_center_mm": {
+        "X": [
+          0,
+          27.28
+        ],
+        "Y": [
+          0,
+          45.0
+        ],
+        "Z": [
+          5,
+          5
+        ]
+      },
+      "max_depth_below_nominal_zero_mm": 0,
+      "tools": [
+        1
+      ],
+      "pauses": 1,
+      "moves": 458,
+      "tool_radius_mm": 0.5,
+      "note": "Work coordinates only; fixture, offsets, height map and cutting unverified"
+    },
+    "dryrun/02_PILOTS_ONLY_D2mm_SETUP_REQUIRED_AIR5.ngc": {
+      "status": "PASS_STATIC_SUBSET",
+      "bounds_center_mm": {
+        "X": [
+          0,
+          32.5
+        ],
+        "Y": [
+          0,
+          56.5
+        ],
+        "Z": [
+          5,
+          5
+        ]
+      },
+      "max_depth_below_nominal_zero_mm": 0,
+      "tools": [
+        2
+      ],
+      "pauses": 1,
+      "moves": 140,
+      "tool_radius_mm": 1.0,
+      "note": "Work coordinates only; fixture, offsets, height map and cutting unverified"
+    },
+    "dryrun/03_EXPERIMENT_resist_clear_UNLEVELLED_AIR5.ngc": {
+      "status": "PASS_STATIC_SUBSET",
+      "bounds_center_mm": {
+        "X": [
+          -0.11,
+          36.11
+        ],
+        "Y": [
+          -0.1,
+          60.1
+        ],
+        "Z": [
+          5,
+          5
+        ]
+      },
+      "max_depth_below_nominal_zero_mm": 0,
+      "tools": [
+        4
+      ],
+      "pauses": 1,
+      "moves": 8910,
+      "tool_radius_mm": 0.10133974596215561,
+      "note": "Work coordinates only; fixture, offsets, height map and cutting unverified"
+    },
+    "dryrun/04_outline_REQUIRES_ENDMILL_1mm_AIR5.ngc": {
+      "status": "PASS_STATIC_SUBSET",
+      "bounds_center_mm": {
+        "X": [
+          -0.5,
+          36.5
+        ],
+        "Y": [
+          -0.5,
+          60.5
+        ],
+        "Z": [
+          5,
+          5
+        ]
+      },
+      "max_depth_below_nominal_zero_mm": 0,
+      "tools": [
+        3
+      ],
+      "pauses": 1,
+      "moves": 178,
+      "tool_radius_mm": 0.5,
+      "note": "Work coordinates only; fixture, offsets, height map and cutting unverified"
+    },
+    "dryrun/05_largeholes_REQUIRES_ENDMILL_1mm_AIR5.ngc": {
+      "status": "PASS_STATIC_SUBSET",
+      "bounds_center_mm": {
+        "X": [
+          0,
+          33.6
+        ],
+        "Y": [
+          0,
+          57.6
+        ],
+        "Z": [
+          5,
+          5
+        ]
+      },
+      "max_depth_below_nominal_zero_mm": 0,
+      "tools": [
+        3
+      ],
+      "pauses": 1,
+      "moves": 284,
+      "tool_radius_mm": 0.5,
+      "note": "Work coordinates only; fixture, offsets, height map and cutting unverified"
+    }
+  },
+  "machine_validated": false,
+  "remaining": [
+    "Verify actual GRBL settings, work offsets and clearance",
+    "Coupon trials and real thickness/point-angle/rpm checks",
+    "No valid height map has been supplied",
+    "Dry film brand/polarity/exposure/etch resistance not validated",
+    "1 mm end mill is required for final large holes and contour"
+  ]
+}

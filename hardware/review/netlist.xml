@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="E">
+  <design>
+    <source>C:\Users\Denis Nekoz\Documents\Arduino\WaterPressureSensor\hardware\WaterPressureSensor.kicad_sch</source>
+    <date>2026-10-17T19:16:17</date>
+    <tool>Eeschema 10.0.6</tool>
+    <textvar name="HW_REV">A3 COMPACT LAYOUT REVIEW</textvar>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title>WaterPressureSensor - module carrier</title>
+        <company/>
+        <rev>A3 REVIEW</rev>
+        <date>2026-10-17</date>
+        <source>WaterPressureSensor.kicad_sch</source>
+        <comment number="1" value="Electrical connections defined; mechanical verification pending"/>
+        <comment number="2" value=""/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="J1">
+      <value>SSD1306 / tall 1x4 socket</value>
+      <footprint>WaterPressureSensor:OLED_ESW_1x04_P2.54_H18.67</footprint>
+      <fields>
+        <field name="Footprint">WaterPressureSensor:OLED_ESW_1x04_P2.54_H18.67</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="WaterPressureSensor" part="OLED_SSD1306_I2C" description="Module connector; footprint pending mechanical verification"/>
+      <property name="Sheetname" value="WaterPressureSensor"/>
+      <property name="Sheetfile" value="WaterPressureSensor.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>9afb9fcd-f988-59a0-9ad7-48d3ce897f98</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+            <pin num="3"/>
+            <pin num="4"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="J2">
+      <value>RJ-10 / 4P4C PCB jack</value>
+      <footprint>WaterPressureSensor:RJ10_Evercom_5301_4P4C</footprint>
+      <fields>
+        <field name="Footprint">WaterPressureSensor:RJ10_Evercom_5301_4P4C</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="WaterPressureSensor" part="4P4C" description="RJ connector, 4P4C (4 positions 4 connected), RJ9/RJ10/RJ22"/>
+      <property name="Sheetname" value="WaterPressureSensor"/>
+      <property name="Sheetfile" value="WaterPressureSensor.kicad_sch"/>
+      <property name="ki_keywords" value="4P4C RJ socket connector"/>
+      <property name="ki_fp_filters" value="4P4C* RJ9* RJ10* RJ22*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>ca460330-9fe7-562c-b3f5-5b57029ee99d</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="4"/>
+            <pin num="3"/>
+            <pin num="2"/>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="U1">
+      <value>WeMos D1 Mini</value>
+      <footprint>WaterPressureSensor:WEMOS_D1_mini_TypeC_headers</footprint>
+      <fields>
+        <field name="Footprint">WaterPressureSensor:WEMOS_D1_mini_TypeC_headers</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="WaterPressureSensor" part="WEMOS_D1_mini" description="32-bit microcontroller module with WiFi"/>
+      <property name="Sheetname" value="WaterPressureSensor"/>
+      <property name="Sheetfile" value="WaterPressureSensor.kicad_sch"/>
+      <property name="ki_keywords" value="ESP8266 WiFi microcontroller ESP8266EX"/>
+      <property name="ki_fp_filters" value="WEMOS*D1*mini*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>0bc79d98-5b27-5562-b53e-5d3920f8fb6a</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="15"/>
+            <pin num="16"/>
+            <pin num="9"/>
+            <pin num="10"/>
+            <pin num="8"/>
+            <pin num="2"/>
+            <pin num="3"/>
+            <pin num="14"/>
+            <pin num="13"/>
+            <pin num="12"/>
+            <pin num="11"/>
+            <pin num="4"/>
+            <pin num="5"/>
+            <pin num="6"/>
+            <pin num="7"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="WaterPressureSensor" part="4P4C">
+      <description>RJ connector, 4P4C (4 positions 4 connected), RJ9/RJ10/RJ22</description>
+      <footprints>
+        <fp>4P4C*</fp>
+        <fp>RJ9*</fp>
+        <fp>RJ10*</fp>
+        <fp>RJ22*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">4P4C</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description">RJ connector, 4P4C (4 positions 4 connected), RJ9/RJ10/RJ22</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+        <pin num="3" name="" type="passive"/>
+        <pin num="4" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="WaterPressureSensor" part="OLED_SSD1306_I2C">
+      <description>Module connector; footprint pending mechanical verification</description>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">SSD1306 0.96in I2C</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description">Module connector; footprint pending mechanical verification</field>
+      </fields>
+      <pins>
+        <pin num="1" name="GND" type="power_in"/>
+        <pin num="2" name="VCC" type="power_in"/>
+        <pin num="3" name="SCL" type="input"/>
+        <pin num="4" name="SDA" type="bidirectional"/>
+      </pins>
+    </libpart>
+    <libpart lib="WaterPressureSensor" part="WEMOS_D1_mini">
+      <description>32-bit microcontroller module with WiFi</description>
+      <docs>https://wiki.wemos.cc/products:d1:d1_mini#documentation</docs>
+      <footprints>
+        <fp>WEMOS*D1*mini*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">WEMOS_D1_mini</field>
+        <field name="Footprint"/>
+        <field name="Datasheet">https://wiki.wemos.cc/products:d1:d1_mini#documentation</field>
+        <field name="Description">32-bit microcontroller module with WiFi</field>
+      </fields>
+      <pins>
+        <pin num="1" name="~{RST}" type="input"/>
+        <pin num="2" name="A0" type="input"/>
+        <pin num="3" name="D0" type="bidirectional"/>
+        <pin num="4" name="SCK/D5" type="bidirectional"/>
+        <pin num="5" name="MISO/D6" type="bidirectional"/>
+        <pin num="6" name="MOSI/D7" type="bidirectional"/>
+        <pin num="7" name="CS/D8" type="bidirectional"/>
+        <pin num="8" name="3V3" type="power_out"/>
+        <pin num="9" name="5V" type="power_in"/>
+        <pin num="10" name="GND" type="power_in"/>
+        <pin num="11" name="D4" type="bidirectional"/>
+        <pin num="12" name="D3" type="bidirectional"/>
+        <pin num="13" name="SDA/D2" type="bidirectional"/>
+        <pin num="14" name="SCL/D1" type="bidirectional"/>
+        <pin num="15" name="RX" type="input"/>
+        <pin num="16" name="TX" type="output"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="WaterPressureSensor">
+      <uri>${KIPRJMOD}/WaterPressureSensor.kicad_sym</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="/+3V3" class="Default">
+      <node ref="J1" pin="2" pinfunction="VCC_2" pintype="power_in"/>
+      <node ref="U1" pin="8" pinfunction="3V3_8" pintype="power_out"/>
+    </net>
+    <net code="2" name="/+5V_USB" class="Default">
+      <node ref="J2" pin="1" pintype="passive"/>
+      <node ref="U1" pin="9" pinfunction="5V_9" pintype="power_in"/>
+    </net>
+    <net code="3" name="/GND" class="Default">
+      <node ref="J1" pin="1" pinfunction="GND_1" pintype="power_in"/>
+      <node ref="J2" pin="2" pintype="passive"/>
+      <node ref="U1" pin="10" pinfunction="GND_10" pintype="power_in"/>
+    </net>
+    <net code="4" name="/I2C_SCL" class="Default">
+      <node ref="J1" pin="3" pinfunction="SCL_3" pintype="input"/>
+      <node ref="U1" pin="14" pinfunction="SCL/D1_14" pintype="bidirectional"/>
+    </net>
+    <net code="5" name="/I2C_SDA" class="Default">
+      <node ref="J1" pin="4" pinfunction="SDA_4" pintype="bidirectional"/>
+      <node ref="U1" pin="13" pinfunction="SDA/D2_13" pintype="bidirectional"/>
+    </net>
+    <net code="6" name="/SENSOR_SIG" class="Default">
+      <node ref="J2" pin="4" pintype="passive"/>
+      <node ref="U1" pin="2" pinfunction="A0_2" pintype="input"/>
+    </net>
+    <net code="7" name="unconnected-(J2-Pad3)" class="Default">
+      <node ref="J2" pin="3" pintype="passive+no_connect"/>
+    </net>
+    <net code="8" name="unconnected-(U1-CS/D8-Pad7)" class="Default">
+      <node ref="U1" pin="7" pinfunction="CS/D8_7" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="9" name="unconnected-(U1-D0-Pad3)" class="Default">
+      <node ref="U1" pin="3" pinfunction="D0_3" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="10" name="unconnected-(U1-D3-Pad12)" class="Default">
+      <node ref="U1" pin="12" pinfunction="D3_12" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="11" name="unconnected-(U1-D4-Pad11)" class="Default">
+      <node ref="U1" pin="11" pinfunction="D4_11" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="12" name="unconnected-(U1-MISO/D6-Pad5)" class="Default">
+      <node ref="U1" pin="5" pinfunction="MISO/D6_5" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="13" name="unconnected-(U1-MOSI/D7-Pad6)" class="Default">
+      <node ref="U1" pin="6" pinfunction="MOSI/D7_6" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="14" name="unconnected-(U1-RX-Pad15)" class="Default">
+      <node ref="U1" pin="15" pinfunction="RX_15" pintype="input+no_connect"/>
+    </net>
+    <net code="15" name="unconnected-(U1-SCK/D5-Pad4)" class="Default">
+      <node ref="U1" pin="4" pinfunction="SCK/D5_4" pintype="bidirectional+no_connect"/>
+    </net>
+    <net code="16" name="unconnected-(U1-TX-Pad16)" class="Default">
+      <node ref="U1" pin="16" pinfunction="TX_16" pintype="output+no_connect"/>
+    </net>
+    <net code="17" name="unconnected-(U1-~{RST}-Pad1)" class="Default">
+      <node ref="U1" pin="1" pinfunction="~{RST}_1" pintype="input+no_connect"/>
+    </net>
+  </nets>
+</export>

@@ -1,0 +1,76 @@
+{
+  "revision": "A2-layout-review",
+  "status": "pcb_review_not_released_for_fabrication",
+  "date": "2026-10-17",
+  "confirmed": {
+    "eda": "KiCad 10.0.6",
+    "controller": "WeMos D1 Mini module",
+    "controller_usb": "USB Type-C, confirmed by user",
+    "display": "SSD1306 I2C 128x64 module",
+    "oled_pinout_front_left_to_right": {"1": "GND", "2": "VCC", "3": "SCL", "4": "SDA"},
+    "sensor_connector_user_name": "RJ-10",
+    "sensor_connector_type": "4P4C PCB-mounted socket",
+    "rj10_pinout": {
+      "1": "+5V_USB",
+      "2": "GND",
+      "4": "SENSOR_SIG"
+    },
+    "power_source": "USB connector on WeMos only",
+    "external_analog_conditioning": false,
+    "copper_side": "B.Cu only",
+    "display_placement": "second tier over WeMos",
+    "display_connection": "tall 1x4 female socket next to WeMos"
+  },
+  "firmware_nets": {
+    "SENSOR_SIG": {"controller_pin": "A0", "symbol_pin": "2"},
+    "I2C_SDA": {"controller_pin": "D2", "gpio": 4, "symbol_pin": "13"},
+    "I2C_SCL": {"controller_pin": "D1", "gpio": 5, "symbol_pin": "14"},
+    "+3V3": {"controller_pin": "3V3", "symbol_pin": "8"},
+    "+5V_USB": {"controller_pin": "5V", "symbol_pin": "9"},
+    "GND": {"controller_pin": "GND", "symbol_pin": "10"}
+  },
+  "assumptions": {
+    "rj10_contact_3": "Reserved, unused on the carrier; no connection requested for this contact",
+    "wemos_mechanics": "Standard D1 Mini 2x8 headers, 2.54 mm pitch, 22.86 mm row separation; verify against the actual Type-C module before fabrication",
+    "oled_header_pitch_mm": 2.54,
+    "oled_header_offset_from_edge_mm": 2.0
+  },
+  "design_choices": {
+    "oled_supply_net": "+3V3",
+    "oled_supply_v": 3.3,
+    "oled_supply_reason": "Reference module accepts 3-5 V; use 3.3 V to keep I2C pull-ups in the ESP8266 logic domain",
+    "board_size_mm": [46, 65],
+    "board_thickness_mm": 1.6,
+    "copper_thickness_um": 35,
+    "track_width_mm": 0.4,
+    "clearance_mm": 0.25,
+    "mounting_holes": "4 x 3.2 mm NPTH for M3",
+    "oled_socket_mpn": "Samtec ESW-104-44-G-S",
+    "oled_socket_body_height_mm": 18.67,
+    "oled_socket_note": "Verify mating height and underside component clearance with the actual OLED header",
+    "rj10_mpn": "EVERCOM 5301-4P4C, 5301-440xxx family",
+    "rj10_note": "Uses KiCad's stock family footprint; actual jack drawing/part revision remains to be verified"
+  },
+  "footprints": {
+    "U1": "WaterPressureSensor:WEMOS_D1_mini_TypeC_headers",
+    "J1": "WaterPressureSensor:OLED_ESW_1x04_P2.54_H18.67",
+    "J2": "WaterPressureSensor:RJ10_Evercom_5301_4P4C"
+  },
+  "references": {
+    "oled_user_reference": {
+      "url": "https://www.datasheethub.com/ssd1306-128x64-mono-0-96-inch-i2c-oled-display/",
+      "module_size_mm": [27, 27, 3.5],
+      "supply_range_v": [3, 5],
+      "status": "User-provided generic module reference, not a dimensioned mounting drawing"
+    }
+  },
+  "pending": {
+    "wemos_revision_and_dimensions": null,
+    "oled_header_pitch_offset_and_mounting_drawing": null,
+    "actual_oled_socket_mating_clearance_mm": null,
+    "rj_connector_part_number": null,
+    "sensor_cable": "Already assembled; contacts 1, 2 and 4 assigned by user",
+    "sensor_model_supply_current_and_signal_range": null,
+    "manufacturing_method_and_rules": null
+  }
+}

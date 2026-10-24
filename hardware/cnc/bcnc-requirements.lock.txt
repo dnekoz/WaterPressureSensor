@@ -1,0 +1,8 @@
+bCNC==0.9.16
+numpy==1.26.4
+opencv-python==4.5.5.64
+pillow==13.0.0
+pyserial==3.0.1
+shxparser==0.0.2
+svgelements==1.9.6
+tkinter-gl==1.1
