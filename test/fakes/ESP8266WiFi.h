@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Arduino.h>
 #include <stdint.h>
 #include <string>
 #include <vector>
@@ -16,40 +17,60 @@ struct FakeWifiAttempt {
 
 struct FakeWiFiClass {
   std::string currentSsid = "Home", currentPassword = "test-password";
+  std::string savedSsid = "Home", savedPassword = "test-password";
   WiFiMode_t mode = WIFI_STA;
   wl_status_t state = WL_DISCONNECTED;
   bool persistentWrites = false, autoReconnect = true, routerAvailable = false;
   bool failDisable = false, failEnable = false, failDisconnect = false;
   unsigned erasedCredentials = 0, disconnects = 0, stationStops = 0;
+  unsigned flashWrites = 0;
+  uint32_t ip = 0, disableDurationMs = 0;
   std::vector<FakeWifiAttempt> attempts;
 
   const std::string &SSID() const { return currentSsid; }
   const std::string &psk() const { return currentPassword; }
   wl_status_t status() const { return state; }
   WiFiMode_t getMode() const { return mode; }
+  uint32_t localIP() const { return ip; }
   void persistent(bool enabled) { persistentWrites = enabled; }
   bool setAutoReconnect(bool enabled) { autoReconnect = enabled; return true; }
   bool enableSTA(bool enabled) {
     if ((enabled && failEnable) || (!enabled && failDisable)) return false;
     mode = WiFiMode_t(enabled ? (mode | WIFI_STA) : (mode & ~WIFI_STA));
-    if (!enabled) { ++stationStops; state = WL_DISCONNECTED; }
+    if (!enabled) {
+      ++stationStops; state = WL_DISCONNECTED; ip = 0;
+      advanceFakeMillis(disableDurationMs);
+    }
     return true;
   }
   bool disconnect(bool off, bool erase) {
     ++disconnects;
-    if (erase) { ++erasedCredentials; currentSsid.clear(); currentPassword.clear(); }
+    if (erase) {
+      ++erasedCredentials; currentSsid.clear(); currentPassword.clear();
+      if (persistentWrites) { savedSsid.clear(); savedPassword.clear(); ++flashWrites; }
+    }
     state = WL_DISCONNECTED;
+    ip = 0;
     if (off) enableSTA(false);
     return !failDisconnect;
   }
-  wl_status_t begin(const char *ssid, const char *password, int channel, const uint8_t *bssid) {
-    attempts.push_back({ssid, password, channel, bssid != nullptr, persistentWrites});
-    currentSsid = ssid;
-    currentPassword = password;
+  wl_status_t begin(const char *ssid, const char *password, int channel, const uint8_t *bssid,
+                    bool connect = true) {
+    // Core 3.1.2 compares against flash when persistence is enabled. If it
+    // matches, the SDK setter is skipped, even if current RAM was cleared.
+    if (!persistentWrites || savedSsid != ssid || savedPassword != password) {
+      currentSsid = ssid;
+      currentPassword = password;
+      if (persistentWrites) { savedSsid = ssid; savedPassword = password; ++flashWrites; }
+    }
     enableSTA(true);
+    if (!connect) return state;
+    attempts.push_back({ssid, password, channel, bssid != nullptr, persistentWrites});
     // Моделируем застрявший SDK: само появление роутера state не меняет;
     // новое подключение может восстановить его лишь при доступной сети.
-    return state = routerAvailable ? WL_CONNECTED : WL_NO_SSID_AVAIL;
+    const bool linked = routerAvailable && currentSsid == ssid && currentPassword == password;
+    ip = linked ? 0x4501a8c0 : 0;
+    return state = linked ? WL_CONNECTED : WL_NO_SSID_AVAIL;
   }
 };
 

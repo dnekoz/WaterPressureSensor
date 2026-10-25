@@ -173,7 +173,7 @@ static void handleStatus() {
   doc["max_bar"] = sensorMaxBar();
   doc["heap_block"] = ESP.getMaxFreeBlockSize();
   doc["authenticated"] = authenticated();
-  doc["wifi"]["connected"] = WiFi.status() == WL_CONNECTED;
+  doc["wifi"]["connected"] = s_wifi.connected();
   doc["wifi"]["ssid"] = s_wifi.ssid();
   doc["wifi"]["ip"] = WiFi.localIP().toString();
   doc["wifi"]["ap"] = s_apActive;
@@ -478,8 +478,9 @@ void portalLoop() {
     memset(s_wifiPass, 0, sizeof(s_wifiPass));
     s_disconnectedMs = now;
   }
-  s_wifi.loop(now);
-  bool connected = WiFi.status() == WL_CONNECTED;
+  s_wifi.loop(millis());
+  now = millis();
+  bool connected = s_wifi.connected();
   static bool wasConnected = false;
   if (connected != wasConnected) {
     if (connected) {
@@ -501,15 +502,16 @@ void portalLoop() {
   const uint32_t apNow = millis();
   if (s_apActive && WiFi.softAPgetStationNum() == 0 &&
       ((connected && uint32_t(apNow - s_apStartedMs) > 10000) ||
-       (WiFi.SSID().length() && uint32_t(apNow - s_apStartedMs) > PORTAL_TIMEOUT_S * 1000UL))) {
+       (s_wifi.configured() && uint32_t(apNow - s_apStartedMs) > PORTAL_TIMEOUT_S * 1000UL))) {
     dns.stop();
     WiFi.softAPdisconnect(true);
-    WiFi.mode(WIFI_STA);
+    // softAPdisconnect(true) снимает только AP-бит. Если менеджер держит STA
+    // выключенным на 200 мс, закрытие AP не должно включать его раньше срока.
     s_apActive = false;
   }
 }
 
-bool portalWifiConnected() { return WiFi.status() == WL_CONNECTED; }
+bool portalWifiConnected() { return s_wifi.connected(); }
 const char *portalApName() { return s_apName; }
 bool portalConsumeSettingsChanged() {
   bool changed = s_settingsChanged;
