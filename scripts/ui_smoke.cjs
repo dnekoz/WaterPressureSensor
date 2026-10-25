@@ -46,6 +46,12 @@ fs.mkdirSync(output, {recursive: true});
     // Без входа можно попросить показать пароль только на физическом экране.
     await page.locator('#auth-button').click();
     await waitForOledPassword(true);
+    // Продление приходит без повторного открытия окна; закрытая вкладка больше
+    // не сможет его отправлять, и серверный 60-секундный срок истечёт сам.
+    await page.clock.install();
+    const renewed = page.waitForResponse(response => response.url().endsWith('/api/login/display') && response.request().postDataJSON().visible === true);
+    await page.clock.fastForward(20001);
+    assert.equal((await renewed).status(), 200, 'Open login renews the OLED password lease');
     await page.locator('#login-dialog [data-close]').click();
     await waitForOledPassword(false);
     assert.equal(await page.locator('#login-dialog').isVisible(), false);

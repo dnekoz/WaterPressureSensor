@@ -116,6 +116,14 @@ function notifyLoginDisplay(visible) {
   });
   return loginDisplayRequest;
 }
+// The device hides the password after 60 s without a renewal, including when
+// this tab is closed or loses its connection. Hidden tabs do not renew it.
+setInterval(() => {
+  if ($('login-dialog').open && !document.hidden) notifyLoginDisplay(true);
+}, 20000);
+document.addEventListener('visibilitychange', () => {
+  if ($('login-dialog').open) notifyLoginDisplay(!document.hidden);
+});
 function showLogin() {
   if (!$('login-dialog').open) {
     messages($('login-form'), '');

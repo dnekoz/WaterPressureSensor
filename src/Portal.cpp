@@ -5,13 +5,12 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
-#include <Updater.h>
 #include <LittleFS.h>
-#include <memory>
-#include <new>
 #include "CaStore.h"
 #include "Config.h"
 #include "Display.h"
+#include "FirmwareUpload.h"
+#include "LoginDisplay.h"
 #include "Mqtt.h"
 #include "Sensor.h"
 #include "Settings.h"
@@ -38,12 +37,16 @@ static char s_session[33] = "";
 static uint32_t s_sessionMs = 0;
 static uint32_t s_loginAttemptMs = 0;
 static bool s_loginAttempted = false;
-static bool s_loginPasswordVisible = false;
+static LoginDisplay s_loginDisplay;
 static bool s_uploadOk = false;
 static bool s_uploadStarted = false;
 static bool s_uploadFinished = false;
 static String s_uploadError;
-static std::unique_ptr<UpdaterClass> s_firmware;
+static FirmwareUpload s_firmware;
+static bool s_firmwareStarted = false;
+static bool s_firmwareFinished = false;
+static bool s_firmwareOk = false;
+static String s_firmwareError;
 
 static void noCache() {
   server.sendHeader("Cache-Control", "no-store");
@@ -111,7 +114,8 @@ static void handleLoginDisplay() {
   if (!doc["visible"].is<bool>()) {
     reply(400, "Укажите, открыто ли окно входа.", true); return;
   }
-  s_loginPasswordVisible = doc["visible"].as<bool>();
+  if (doc["visible"].as<bool>()) s_loginDisplay.show(millis());
+  else s_loginDisplay.hide();
   // Обновляем экран до следующей попытки MQTT, которая может задержать loop().
   redrawDisplay();
   reply(200, "Экран обновлён.");
@@ -135,7 +139,7 @@ static void handleLogin() {
            (unsigned long)ESP.random(), (unsigned long)ESP.random(),
            (unsigned long)ESP.random(), (unsigned long)ESP.random());
   s_sessionMs = millis();
-  s_loginPasswordVisible = false;
+  s_loginDisplay.hide();
   redrawDisplay();
   server.sendHeader("Set-Cookie", String("wps_session=") + s_session + "; Path=/; HttpOnly; SameSite=Strict; Max-Age=3600");
   reply(200, "Вы вошли в интерфейс.");
@@ -173,6 +177,7 @@ static void handleStatus() {
   doc["max_bar"] = sensorMaxBar();
   doc["heap_block"] = ESP.getMaxFreeBlockSize();
   doc["authenticated"] = authenticated();
+  doc["login_password_visible"] = s_loginDisplay.visible(millis());
   doc["wifi"]["connected"] = s_wifi.connected();
   doc["wifi"]["ssid"] = s_wifi.ssid();
   doc["wifi"]["ip"] = WiFi.localIP().toString();
@@ -357,40 +362,49 @@ static void handleCaDone() {
 static void handleFirmwareUpload() {
   HTTPUpload &upload = server.upload();
   if (upload.status == UPLOAD_FILE_START) {
-    s_uploadStarted = true;
-    s_uploadFinished = false;
-    s_uploadError = "";
-    s_uploadOk = authenticated() && mutationHeader();
-    if (s_uploadOk) {
-      s_firmware.reset(new (std::nothrow) UpdaterClass());
-      if (s_firmware) s_firmware->runAsync(true);
-      uint32_t available = ESP.getFreeSketchSpace();
-      s_uploadOk = s_firmware && available > 0x1000 && s_firmware->begin((available - 0x1000) & 0xFFFFF000, U_FLASH);
-      if (!s_uploadOk) s_uploadError = "Не удалось начать обновление: недостаточно места или памяти.";
-    } else s_uploadError = "Войдите в интерфейс перед обновлением.";
-  } else if (upload.status == UPLOAD_FILE_WRITE && s_uploadOk) {
-    s_uploadOk = s_firmware->write(upload.buf, upload.currentSize) == upload.currentSize;
-    if (!s_uploadOk) s_uploadError = "Не удалось записать прошивку.";
+    if (s_firmwareStarted) {
+      s_firmware.abort();
+      s_firmwareOk = false;
+      s_firmwareError = "Выберите ровно один файл прошивки.";
+    } else {
+      s_firmwareStarted = true;
+      s_firmwareFinished = false;
+      s_firmwareError = "";
+      s_firmwareOk = authenticated() && mutationHeader() && !s_restartPending;
+      if (s_firmwareOk) {
+        const uint32_t available = ESP.getFreeSketchSpace();
+        const uint32_t capacity = available > 0x1000 ? (available - 0x1000) & 0xFFFFF000 : 0;
+        s_firmwareOk = s_firmware.begin(capacity);
+        if (!s_firmwareOk) s_firmwareError = s_firmware.error();
+      } else s_firmwareError = s_restartPending ? "Дождитесь перезапуска устройства." : "Войдите в интерфейс перед обновлением.";
+    }
+  } else if (upload.status == UPLOAD_FILE_WRITE && s_firmwareOk) {
+    s_firmwareOk = s_firmware.write(upload.buf, upload.currentSize);
+    if (!s_firmwareOk) s_firmwareError = s_firmware.error();
   } else if (upload.status == UPLOAD_FILE_END) {
-    s_uploadFinished = upload.totalSize > 0;
+    s_firmwareFinished = upload.totalSize > 0;
   } else if (upload.status == UPLOAD_FILE_ABORTED) {
-    // Destructor освобождает буфер без commit. end(false) может подтвердить
-    // полностью записанный файл даже в ветке отмены.
-    s_firmware.reset();
-    s_uploadOk = false;
-    s_uploadError = "Загрузка прошивки прервана.";
+    s_firmware.abort();
+    s_firmwareStarted = s_firmwareFinished = s_firmwareOk = false;
+    s_firmwareError = "Загрузка прошивки прервана.";
   }
   sensorSample();
   yield();
 }
 
 static void handleFirmwareDone() {
-  if (!authorize(true)) { s_firmware.reset(); s_uploadStarted = false; return; }
-  bool ok = s_uploadStarted && s_uploadFinished && s_uploadOk && s_firmware && s_firmware->end(true);
-  s_firmware.reset();
-  s_uploadStarted = false;
+  if (!authorize(true)) {
+    s_firmware.abort();
+    s_firmwareStarted = s_firmwareFinished = s_firmwareOk = false;
+    return;
+  }
+  const bool ready = s_firmwareStarted && s_firmwareFinished && s_firmwareOk;
+  const bool ok = ready && s_firmware.finish();
+  if (ready && !ok) s_firmwareError = s_firmware.error();
+  s_firmware.abort();
+  s_firmwareStarted = s_firmwareFinished = s_firmwareOk = false;
   if (!ok) {
-    reply(400, s_uploadError.length() ? s_uploadError.c_str() : "Неверный или неполный файл прошивки.", true);
+    reply(400, s_firmwareError.length() ? s_firmwareError.c_str() : "Выберите один полный файл firmware.bin.", true);
     return;
   }
   reply(200, "Прошивка записана. Устройство перезагружается.");
@@ -519,7 +533,7 @@ bool portalConsumeSettingsChanged() {
   return changed;
 }
 bool portalDrawIfActive() {
-  if (s_loginPasswordVisible) {
+  if (s_loginDisplay.visible(millis())) {
     displayLoginPassword(settings.portalPass);
     return true;
   }

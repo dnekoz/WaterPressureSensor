@@ -13,7 +13,7 @@ SETTINGS = dict(mqttHost='mqtt.home.local', mqttPort=8883, mqttUser='water', mqt
                 mqttFingerprint='', ntpServer='pool.ntp.org', adcFullScaleV=3.2, vZero=0.5, vFull=4.5,
                 pFullMPa=0.5, wifiSsid='Home Network', mqttPasswordSet=True)
 START = time.monotonic()
-LOGIN_PASSWORD_VISIBLE = False
+LOGIN_PASSWORD_DEADLINE = 0.0
 
 
 class Preview(SimpleHTTPRequestHandler):
@@ -42,8 +42,8 @@ class Preview(SimpleHTTPRequestHandler):
         if path == '/api/status':
             reading = dict(bar=2.47, mpa=0.247, volt=2.477, raw=792, raw_instant=793,
                            rssi=-58, over=False, fault=False, heap=36480, age_ms=12, stale=False)
-            self.reply(dict(demo=True, reading=reading, name=SETTINGS['deviceName'], id='wps_abc123', version='3.0.2',
-                            login_password_visible=LOGIN_PASSWORD_VISIBLE,
+            self.reply(dict(demo=True, reading=reading, name=SETTINGS['deviceName'], id='wps_abc123', version='3.1.1',
+                            login_password_visible=time.monotonic() < LOGIN_PASSWORD_DEADLINE,
                             uptime_s=int(time.monotonic()-START)+86400, max_bar=3.375, heap_block=31000,
                             authenticated=self.authorized(), wifi=dict(connected=True, ssid=SETTINGS['wifiSsid'], ip='192.168.1.42',
                             ap=False, ap_name='WaterSensor-abc123', ap_ip='192.168.4.1'),
@@ -59,7 +59,7 @@ class Preview(SimpleHTTPRequestHandler):
             super().do_GET()
 
     def do_POST(self):
-        global LOGIN_PASSWORD_VISIBLE
+        global LOGIN_PASSWORD_DEADLINE
         raw = self.rfile.read(int(self.headers.get('Content-Length', 0)))
         path = urlsplit(self.path).path
         if self.headers.get('X-WPS-Request') != '1':
@@ -68,12 +68,12 @@ class Preview(SimpleHTTPRequestHandler):
         if path == '/api/login/display':
             if type(data.get('visible')) is not bool:
                 return self.reply(dict(error='Укажите, открыто ли окно входа.'), 400)
-            LOGIN_PASSWORD_VISIBLE = data['visible']
+            LOGIN_PASSWORD_DEADLINE = time.monotonic() + 60 if data['visible'] else 0.0
             return self.reply(dict(message='Экран обновлён.'))
         if path == '/api/login':
             if data.get('password') != 'preview-access123':
                 return self.reply(dict(error='Неверный пароль интерфейса.'), 401)
-            LOGIN_PASSWORD_VISIBLE = False
+            LOGIN_PASSWORD_DEADLINE = 0.0
             return self.reply(dict(message='Вход выполнен.'), cookie='wps_session=preview; Path=/; HttpOnly; SameSite=Strict')
         if not self.authorized():
             return self.reply(dict(error='Войдите в интерфейс.'), 401)
