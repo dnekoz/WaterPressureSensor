@@ -426,11 +426,8 @@ static void serveAsset(const uint8_t *data, size_t length, const char *type, con
 void portalBegin() {
   snprintf(s_apName, sizeof(s_apName), "WaterSensor-%06x", ESP.getChipId());
   Serial.printf("[portal] пароль интерфейса и точки доступа: %s\n", settings.portalPass);
-  WiFi.persistent(false);
-  WiFi.mode(WIFI_STA);
   char hostname[32];
   snprintf(hostname, sizeof(hostname), "wps-%06x", ESP.getChipId());
-  WiFi.hostname(hostname);
   s_wifi.begin(millis());
   if (!s_wifi.configured()) startAp();
   s_disconnectedMs = millis();

@@ -15,7 +15,7 @@ static void connectAt(const char *ssid, const char *password, uint32_t now) {
   setFakeMillis(now); connection.connect(ssid, password, now);
 }
 static void boot() { beginAt(0); loopAt(FIRST_ATTEMPT); }
-void setUp() { (void)ESP; setFakeMillis(0); WiFi = FakeWiFiClass{}; connection = WifiConnection{}; }
+void setUp() { setFakeMillis(0); WiFi = FakeWiFiClass{}; connection = WifiConnection{}; }
 void tearDown() {}
 
 static void test_saved_network_clears_ram_and_waits_200ms_without_flash_write() {
@@ -36,6 +36,7 @@ static void test_saved_network_clears_ram_and_waits_200ms_without_flash_write() 
   TEST_ASSERT_EQUAL_UINT(1, WiFi.attempts.size());
   TEST_ASSERT_EQUAL_STRING("Home", WiFi.attempts.back().ssid.c_str());
   TEST_ASSERT_EQUAL_STRING("test-password", WiFi.attempts.back().password.c_str());
+  TEST_ASSERT_EQUAL_STRING("Water-Sensor-ABC123", WiFi.attempts.back().hostname.c_str());
   TEST_ASSERT_EQUAL_INT(0, WiFi.attempts.back().channel);
   TEST_ASSERT_FALSE(WiFi.attempts.back().bssidPinned);
   TEST_ASSERT_FALSE(WiFi.attempts.back().saved);
@@ -64,9 +65,11 @@ static void test_router_returns_after_long_outage_even_after_ap_timeout() {
   TEST_ASSERT_EQUAL_INT(WIFI_AP, WiFi.mode);
   loopAt(31199);
   TEST_ASSERT_EQUAL_UINT(1, WiFi.attempts.size());
+  WiFi.dhcpHostname = "ESP-ABC123"; // SDK сбросил имя при смене режима.
   loopAt(31200);
   TEST_ASSERT_EQUAL_INT(WIFI_AP_STA, WiFi.mode);
   TEST_ASSERT_EQUAL_UINT(2, WiFi.attempts.size());
+  TEST_ASSERT_EQUAL_STRING("Water-Sensor-ABC123", WiFi.attempts.back().hostname.c_str());
   WiFi.mode = WIFI_STA; // Портал закрыл резервную AP.
   for (uint32_t now = 61200; now <= 212200; now += 30200) {
     loopAt(now); loopAt(now + WIFI_STA_RESTART_PAUSE_MS);
@@ -120,6 +123,7 @@ static void test_no_credentials_keeps_setup_ap_untouched() {
   TEST_ASSERT_EQUAL_UINT(0, WiFi.stationStops);
   TEST_ASSERT_EQUAL_UINT(0, WiFi.disconnects);
   TEST_ASSERT_EQUAL_INT(WIFI_AP_STA, WiFi.mode);
+  TEST_ASSERT_EQUAL_STRING("Water-Sensor-ABC123", WiFi.getHostname());
 }
 
 static void test_new_credentials_cancel_old_pending_retry_and_save_once() {
@@ -127,9 +131,11 @@ static void test_new_credentials_cancel_old_pending_retry_and_save_once() {
   connectAt("New router", "new-password", FIRST_RETRY + 50);
   loopAt(FIRST_RETRY + 200);
   TEST_ASSERT_EQUAL_UINT(1, WiFi.attempts.size());
+  WiFi.dhcpHostname = "ESP-ABC123";
   loopAt(FIRST_RETRY + 250);
   TEST_ASSERT_EQUAL_UINT(2, WiFi.attempts.size());
   TEST_ASSERT_EQUAL_STRING("New router", connection.ssid());
+  TEST_ASSERT_EQUAL_STRING("Water-Sensor-ABC123", WiFi.attempts.back().hostname.c_str());
   TEST_ASSERT_TRUE(WiFi.attempts.back().saved);
   loopAt(FIRST_RETRY + 250 + WIFI_RECONNECT_MS);
   loopAt(FIRST_RETRY + 450 + WIFI_RECONNECT_MS);

@@ -5,7 +5,19 @@
 #include <stdio.h>
 #include "Config.h"
 
+static void setStationHostname() {
+  char hostname[32];
+  snprintf(hostname, sizeof(hostname), "Water-Sensor-%06X", unsigned(ESP.getChipId()));
+  WiFi.hostname(hostname);
+}
+
 void WifiConnection::begin(uint32_t now) {
+  WiFi.persistent(false);
+  // Задаём имя до включения STA: SDK может сам начать соединение с роутером.
+  setStationHostname();
+  WiFi.enableSTA(true);
+  Serial.printf("[WIFI][HOSTNAME] Имя DHCP: %s\n", WiFi.getHostname());
+
   // Копия нужна до перезапусков STA: повтор не должен зависеть от того,
   // какую конфигурацию SDK отдаёт во время потери связи или смены режима.
   const auto savedSsid = WiFi.SSID();
@@ -15,7 +27,6 @@ void WifiConnection::begin(uint32_t now) {
   s_lastAttemptMs = now;
   s_restartPending = false;
   s_savePending = false;
-  WiFi.persistent(false);
   WiFi.setAutoReconnect(true);
   if (configured()) prepareAttempt(now, false);
 }
@@ -60,6 +71,8 @@ void WifiConnection::prepareAttempt(uint32_t now, bool save) {
 }
 
 void WifiConnection::startAttempt(bool save) {
+  // После перезапуска STA задаём имя для DHCP перед новым подключением.
+  setStationHostname();
   if (save) {
     // Core compares against flash in persistent mode and can skip the setter
     // for an unchanged profile. Restore RAM first (without connecting), since

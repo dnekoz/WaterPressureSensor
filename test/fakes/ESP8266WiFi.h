@@ -10,7 +10,7 @@ enum wl_status_t { WL_IDLE_STATUS = 0, WL_NO_SSID_AVAIL = 1, WL_CONNECTED = 3,
 enum WiFiMode_t { WIFI_OFF = 0, WIFI_STA = 1, WIFI_AP = 2, WIFI_AP_STA = 3 };
 
 struct FakeWifiAttempt {
-  std::string ssid, password;
+  std::string ssid, password, hostname;
   int channel = 0;
   bool bssidPinned = false, saved = false;
 };
@@ -18,6 +18,7 @@ struct FakeWifiAttempt {
 struct FakeWiFiClass {
   std::string currentSsid = "Home", currentPassword = "test-password";
   std::string savedSsid = "Home", savedPassword = "test-password";
+  std::string dhcpHostname = "ESP-ABC123";
   WiFiMode_t mode = WIFI_STA;
   wl_status_t state = WL_DISCONNECTED;
   bool persistentWrites = false, autoReconnect = true, routerAvailable = false;
@@ -29,6 +30,8 @@ struct FakeWiFiClass {
 
   const std::string &SSID() const { return currentSsid; }
   const std::string &psk() const { return currentPassword; }
+  const char *getHostname() const { return dhcpHostname.c_str(); }
+  bool hostname(const char *name) { dhcpHostname = name; return true; }
   wl_status_t status() const { return state; }
   WiFiMode_t getMode() const { return mode; }
   uint32_t localIP() const { return ip; }
@@ -65,7 +68,7 @@ struct FakeWiFiClass {
     }
     enableSTA(true);
     if (!connect) return state;
-    attempts.push_back({ssid, password, channel, bssid != nullptr, persistentWrites});
+    attempts.push_back({ssid, password, dhcpHostname, channel, bssid != nullptr, persistentWrites});
     // Моделируем застрявший SDK: само появление роутера state не меняет;
     // новое подключение может восстановить его лишь при доступной сети.
     const bool linked = routerAvailable && currentSsid == ssid && currentPassword == password;
